@@ -835,40 +835,7 @@ def build_items():
     return items
 
 
-        # If this is a Roundhill ticker and we have fund-page calendar/history data, fill it
-        if d.get("issuer") == "Roundhill" and d["ticker"] in rhd:
-            info = rhd[d["ticker"]]
-            if info.get("distribution_per_share") is not None:
-                items[-1]["distribution_per_share"] = info["distribution_per_share"]
-            for k in ["declaration_date","ex_dividend_date","record_date","pay_date"]:
-                if info.get(k):
-                    items[-1][k] = info[k]
-            if info.get("source_url"):
-                items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + "Roundhill site"
 
-        # If this is a GraniteShares ticker, prefer YieldBOOST fund-page calendar data (frequency + amount + ex/record/pay)
-        if d.get("issuer") == "GraniteShares" and d["ticker"] in gsd_fund:
-            info = gsd_fund[d["ticker"]]
-            if info.get("frequency"):
-                items[-1]["frequency"] = info["frequency"]
-            if info.get("distribution_per_share") is not None:
-                items[-1]["distribution_per_share"] = info["distribution_per_share"]
-            if info.get("ex_dividend_date"):
-                items[-1]["ex_dividend_date"] = info["ex_dividend_date"]
-            if info.get("record_date"):
-                items[-1]["record_date"] = info["record_date"]
-            if info.get("pay_date"):
-                items[-1]["pay_date"] = info["pay_date"]
-            if info.get("next_expected_distribution_date"):
-                items[-1]["next_expected_distribution_date"] = info["next_expected_distribution_date"]
-                notes = items[-1].get("notes", "")
-
-if info.get("next_expected_distribution_date"):
-    notes = (notes + " | " if notes else "") + f"Next exp: {info['next_expected_distribution_date']}"
-
-notes = (notes + " | " if notes else "") + "GraniteShares fund page"
-
-items[-1]["notes"] = notes
 def main():
     items = build_items()
     payload = {
