@@ -518,13 +518,7 @@ def graniteshares_yieldboost_from_fund_pages(tickers: List[str]) -> Dict[str, Di
 
 
 
-def graniteshares_yieldboost_from_fund_pages(tickers: List[str]) -> Dict[str, Dict]:
-    out = {}
-    for t in tickers:
-        info = graniteshares_parse_yieldboost_fund_page(t)
-        if info:
-            out[t] = info
-    return out
+
 
 
 
