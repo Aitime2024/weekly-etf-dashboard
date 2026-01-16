@@ -19,6 +19,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Syntax check (py_compile)
+        run: python -m py_compile scraper.py
+
       - name: Install deps
         run: |
           pip install -r requirements.txt
