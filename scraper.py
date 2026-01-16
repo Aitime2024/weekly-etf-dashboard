@@ -7,6 +7,28 @@ from typing import List, Dict, Optional
 import requests
 import time
 from bs4 import BeautifulSoup
+def _parse_date_to_iso(s: str) -> Optional[str]:
+    if not s:
+        return None
+    s = str(s).strip()
+    import datetime as _dt
+    for fmt in ("%B %d, %Y", "%b %d, %Y"):
+        try:
+            return _dt.datetime.strptime(s, fmt).date().isoformat()
+        except Exception:
+            pass
+    return None
+
+def _parse_float(s: str) -> Optional[float]:
+    if s is None:
+        return None
+    s = str(s).strip().replace("$", "").replace(",", "")
+    try:
+        return float(s)
+    except Exception:
+        return None
+
+
 
 OUTFILE = "data/weekly_etfs.json"
 ALERT_DROP_PCT = -15.0
@@ -368,15 +390,150 @@ def graniteshares_yieldboost_distribution_table() -> Dict[str, Dict]:
         pay_raw = cell(idx_pay)
 
         ex_iso = to_iso_guess(exrec_raw)
-        pay_iso = to_iso_guess(pay_raw)
+        pay_iso = to_iso_gues
+# --- GraniteShares YieldBOOST fund-page parsing (weekly detection + calendar parsing) ---
+def graniteshares_yieldboost_fund_url(ticker: str) -> str:
+    return f"https://graniteshares.com/institutional/us/en-us/etfs/{ticker.lower()}/"
 
-        out[ticker.upper()] = {
-            "distribution_per_share": dist,
-            "ex_dividend_date": ex_iso,
-            "record_date": ex_iso,   # table combines ex-date & record date
-            "pay_date": pay_iso,
-            "source_url": url
-        }
+def graniteshares_parse_yieldboost_fund_page(ticker: str) -> Dict:
+    """
+    Parse GraniteShares YieldBOOST fund page for:
+      - Distribution Frequency (Weekly/Monthly/etc.)
+      - Latest Distribution Amount ($/Share)
+      - Ex Date / Record Date / Pay Date (from Distribution Calendar table)
+      - Next Expected Distribution Date (tile, if present)
+    """
+    url = graniteshares_yieldboost_fund_url(ticker)
+    try:
+        soup = fetch_soup(url)
+    except Exception:
+        return {}
+
+    text = soup.get_text("\n", strip=True)
+
+    # Frequency tile
+    freq = None
+    m = re.search(r"Distribution Frequency\s+([A-Za-z]+)", text, flags=re.IGNORECASE)
+    if m:
+        freq = m.group(1).strip().title()
+
+    # Next expected date tile (optional)
+    next_expected_iso = None
+    m = re.search(r"Next Expected Distribution Date\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})", text, flags=re.IGNORECASE)
+    if m:
+        next_expected_iso = None
+        nd = m.group(1).strip()
+        next_expected_iso = _parse_date_to_iso(nd)
+
+    # Fallback tiles
+    latest_amt = None
+    m = re.search(r"Latest Distribution Amount\s*\$?\s*([0-9]*\.[0-9]+)", text, flags=re.IGNORECASE)
+    if m:
+        latest_amt = _parse_float(m.group(1))
+
+    latest_tile_pay_iso = None
+    m = re.search(r"Latest Distribution Date\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})", text, flags=re.IGNORECASE)
+    if m:
+        latest_tile_pay_iso = _parse_date_to_iso(m.group(1).strip())
+
+    # Preferred: Distribution Calendar table
+    ex_iso = rec_iso = pay_iso = None
+
+    tables = soup.find_all("table")
+    for tbl in tables:
+        ths = tbl.find_all("th")
+        headers = [h.get_text(" ", strip=True).lower() for h in ths]
+        if not headers:
+            continue
+
+        has_ex = any("ex date" in h for h in headers)
+        has_rec = any("record date" in h for h in headers)
+        has_pay = any("pay date" in h for h in headers)
+        has_share = any("$/share" in h.replace(" ", "") or "$ / share" in h or "share" in h for h in headers)
+
+        if not (has_ex and has_rec and has_pay and has_share):
+            continue
+
+        tbody = tbl.find("tbody")
+        tr = tbody.find("tr") if tbody else None
+        if not tr:
+            trs = tbl.find_all("tr")
+            tr = trs[1] if len(trs) > 1 else None
+        if not tr:
+            continue
+
+        tds = [td.get_text(" ", strip=True) for td in tr.find_all("td")]
+        def idx(sub):
+            for i, h in enumerate(headers):
+                if sub in h:
+                    return i
+            return None
+
+        i_ex = idx("ex date")
+        i_rec = idx("record date")
+        i_pay = idx("pay date")
+
+        # $/Share header varies; pick first header containing "share"
+        i_share = None
+        for i, h in enumerate(headers):
+            if "$/share" in h.replace(" ", "") or "share" in h:
+                i_share = i
+                break
+
+        if i_ex is not None and i_ex < len(tds):
+            ex_iso = _parse_date_to_iso(tds[i_ex])
+        if i_rec is not None and i_rec < len(tds):
+            rec_iso = _parse_date_to_iso(tds[i_rec])
+        if i_pay is not None and i_pay < len(tds):
+            pay_iso = _parse_date_to_iso(tds[i_pay])
+        if i_share is not None and i_share < len(tds):
+            latest_amt = _parse_float(tds[i_share])
+
+        break
+
+    out = {"source_url": url}
+    if freq:
+        out["frequency"] = freq
+    if latest_amt is not None:
+        out["distribution_per_share"] = latest_amt
+    if ex_iso:
+        out["ex_dividend_date"] = ex_iso
+    if rec_iso:
+        out["record_date"] = rec_iso
+    if pay_iso:
+        out["pay_date"] = pay_iso
+    elif latest_tile_pay_iso:
+        out["pay_date"] = latest_tile_pay_iso
+    if next_expected_iso:
+        out["next_expected_distribution_date"] = next_expected_iso
+    return out
+
+def graniteshares_yieldboost_from_fund_pages(tickers: List[str]) -> Dict[str, Dict]:
+    out = {}
+    for t in tickers:
+        info = graniteshares_parse_yieldboost_fund_page(t)
+        if info:
+            out[t] = info
+    return out
+
+
+urce_url": url}
+    if freq:
+        out["frequency"] = freq
+    if latest_amt is not None:
+        out["distribution_per_share"] = latest_amt
+    if latest_date:
+        out["pay_date"] = latest_date
+    if next_date:
+        out["next_expected_distribution_date"] = next_date
+    return out
+
+def graniteshares_yieldboost_from_fund_pages(tickers: List[str]) -> Dict[str, Dict]:
+    out = {}
+    for t in tickers:
+        info = graniteshares_parse_yieldboost_fund_page(t)
+        if info:
+            out[t] = info
     return out
 
 
@@ -640,6 +797,8 @@ def build_items():
     roundhill_tickers = [d['ticker'] for d in discovered if d.get('issuer') == 'Roundhill']
     rhd = roundhill_weekly_distributions_and_dates(roundhill_tickers)
     gsd = graniteshares_yieldboost_distribution_table()
+    granite_tickers = [d['ticker'] for d in discovered if d.get('issuer') == 'GraniteShares']
+    gsd_fund = graniteshares_yieldboost_from_fund_pages(granite_tickers)
 
     items = []
     for d in discovered:
@@ -681,7 +840,9 @@ def build_items():
                 items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + "YieldMax PR"
 
 
-   
+    # final safety net: weekly-only
+    items = [x for x in items if str(x.get("frequency","")).lower() == "weekly"]
+    return items
 
 
         # If this is a Roundhill ticker and we have fund-page calendar/history data, fill it
@@ -695,21 +856,23 @@ def build_items():
             if info.get("source_url"):
                 items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + "Roundhill site"
 
-        # If this is a GraniteShares ticker and we have official distribution table data, fill it
-        if d.get("issuer") == "GraniteShares" and d["ticker"] in gsd:
-            info = gsd[d["ticker"]]
+        # If this is a GraniteShares ticker, prefer YieldBOOST fund-page calendar data (frequency + amount + ex/record/pay)
+        if d.get("issuer") == "GraniteShares" and d["ticker"] in gsd_fund:
+            info = gsd_fund[d["ticker"]]
+            if info.get("frequency"):
+                items[-1]["frequency"] = info["frequency"]
             if info.get("distribution_per_share") is not None:
                 items[-1]["distribution_per_share"] = info["distribution_per_share"]
-            for k in ["ex_dividend_date","record_date","pay_date"]:
-                if info.get(k):
-                    items[-1][k] = info[k]
-            if info.get("source_url"):
-                items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + "GraniteShares site"
-
- # final safety net: weekly-only
-    items = [x for x in items if str(x.get("frequency","")).lower() == "weekly"]
-    return items
-    
+            if info.get("ex_dividend_date"):
+                items[-1]["ex_dividend_date"] = info["ex_dividend_date"]
+            if info.get("record_date"):
+                items[-1]["record_date"] = info["record_date"]
+            if info.get("pay_date"):
+                items[-1]["pay_date"] = info["pay_date"]
+            if info.get("next_expected_distribution_date"):
+                items[-1]["next_expected_distribution_date"] = info["next_expected_distribution_date"]
+                items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + f"Next exp: {info['next_expected_distribution_date']}"
+            items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + "GraniteShares fund page"
 def main():
     items = build_items()
     payload = {
