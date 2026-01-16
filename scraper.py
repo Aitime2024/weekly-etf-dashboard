@@ -517,16 +517,6 @@ def graniteshares_yieldboost_from_fund_pages(tickers: List[str]) -> Dict[str, Di
     return out
 
 
-"source_url": url}
-    if freq:
-        out["frequency"] = freq
-    if latest_amt is not None:
-        out["distribution_per_share"] = latest_amt
-    if latest_date:
-        out["pay_date"] = latest_date
-    if next_date:
-        out["next_expected_distribution_date"] = next_date
-    return out
 
 def graniteshares_yieldboost_from_fund_pages(tickers: List[str]) -> Dict[str, Dict]:
     out = {}
