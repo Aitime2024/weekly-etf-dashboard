@@ -390,7 +390,7 @@ def graniteshares_yieldboost_distribution_table() -> Dict[str, Dict]:
         pay_raw = cell(idx_pay)
 
         ex_iso = to_iso_guess(exrec_raw)
-        pay_iso = to_iso_gues
+        pay_iso = to_iso_guess
 # --- GraniteShares YieldBOOST fund-page parsing (weekly detection + calendar parsing) ---
 def graniteshares_yieldboost_fund_url(ticker: str) -> str:
     return f"https://graniteshares.com/institutional/us/en-us/etfs/{ticker.lower()}/"
