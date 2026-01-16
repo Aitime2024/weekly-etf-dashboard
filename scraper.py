@@ -871,12 +871,14 @@ def build_items():
                 items[-1]["pay_date"] = info["pay_date"]
             if info.get("next_expected_distribution_date"):
                 items[-1]["next_expected_distribution_date"] = info["next_expected_distribution_date"]
-                items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + f"Next exp: {info['next_expected_distribution_date']}"
-            items[-1]["notes"] = (
-    (items[-1].get("notes", "") + " | ")
-    if items[-1].get("notes")
-    else ""
-) + "GraniteShares fund page"
+                notes = items[-1].get("notes", "")
+
+if info.get("next_expected_distribution_date"):
+    notes = (notes + " | " if notes else "") + f"Next exp: {info['next_expected_distribution_date']}"
+
+notes = (notes + " | " if notes else "") + "GraniteShares fund page"
+
+items[-1]["notes"] = notes
 def main():
     items = build_items()
     payload = {
