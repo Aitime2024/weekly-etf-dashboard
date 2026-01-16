@@ -517,7 +517,7 @@ def graniteshares_yieldboost_from_fund_pages(tickers: List[str]) -> Dict[str, Di
     return out
 
 
-urce_url": url}
+"source_url": url}
     if freq:
         out["frequency"] = freq
     if latest_amt is not None:
