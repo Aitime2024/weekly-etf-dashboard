@@ -681,9 +681,7 @@ def build_items():
                 items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + "YieldMax PR"
 
 
-    # final safety net: weekly-only
-    items = [x for x in items if str(x.get("frequency","")).lower() == "weekly"]
-    return items
+   
 
 
         # If this is a Roundhill ticker and we have fund-page calendar/history data, fill it
@@ -707,6 +705,11 @@ def build_items():
                     items[-1][k] = info[k]
             if info.get("source_url"):
                 items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + "GraniteShares site"
+
+ # final safety net: weekly-only
+    items = [x for x in items if str(x.get("frequency","")).lower() == "weekly"]
+    return items
+    
 def main():
     items = build_items()
     payload = {
