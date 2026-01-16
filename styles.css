@@ -1,0 +1,41 @@
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0}
+header{padding:14px 14px 6px;border-bottom:1px solid #eee}
+h1{margin:0 0 4px;font-size:18px}
+.sub{color:#666;font-size:12px}
+
+.summary{padding:10px 14px;border-bottom:1px solid #eee}
+.summaryBox{font-size:13px;font-weight:700;color:#222;display:flex;gap:10px;flex-wrap:wrap}
+.summaryPill{font-weight:700;padding:4px 10px;border-radius:999px;background:#f6f6f6;border:1px solid #eee}
+
+.alerts{padding:10px 14px;border-bottom:1px solid #eee}
+.alertsTitle{font-size:13px;font-weight:800;margin-bottom:6px}
+.alertsBox{font-size:13px;color:#333}
+.alertItem{padding:6px 0;border-top:1px dashed #eee}
+.alertItem:first-child{border-top:0}
+
+.controls{display:flex;gap:10px;padding:10px 14px;flex-wrap:wrap;align-items:center;border-bottom:1px solid #eee}
+.controls input,.controls select{padding:8px;font-size:14px}
+.chk{display:flex;gap:6px;align-items:center;font-size:13px;color:#333}
+.lastUpdated{margin-left:auto;color:#666;font-size:12px}
+#table{padding:10px 14px 18px}
+footer{padding:10px 14px 24px;color:#777;font-size:12px;border-top:1px solid #eee}
+
+/* Colorblind-friendly deltas (blue/orange + icons) */
+.pos{font-weight:800;color:#1f77b4}
+.neg{font-weight:800;color:#ff7f0e}
+.zero{font-weight:800;color:#666}
+
+/* High-contrast mode */
+body.hc header,body.hc .controls,body.hc .alerts,body.hc .summary,body.hc footer{border-color:#cfcfcf}
+body.hc h1{font-size:20px}
+body.hc .sub{font-size:13px}
+body.hc .controls input,body.hc .controls select{border:2px solid #333;border-radius:10px;padding:10px 12px;font-size:15px}
+body.hc .summaryPill{border:2px solid #333;background:#fff}
+body.hc .alertsBox,body.hc .summaryBox,body.hc footer{color:#111}
+body.hc .tabulator{border:2px solid #333;border-radius:10px}
+body.hc .tabulator .tabulator-header{border-bottom:2px solid #333}
+body.hc .tabulator .tabulator-col{border-right:1px solid #666}
+body.hc .tabulator-row{border-bottom:1px solid #777;min-height:44px;font-size:14px}
+body.hc .tabulator-cell{padding-top:10px;padding-bottom:10px}
+body.hc a{text-decoration:underline}
+body.hc .pos,body.hc .neg,body.hc .zero{font-weight:900}
