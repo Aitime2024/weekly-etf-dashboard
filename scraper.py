@@ -818,27 +818,35 @@ def build_items():
             "notes": d.get("notes") or ""
         })
         # If this is a YieldMax ticker and we have PR data, fill distribution + dates
-        if d.get("issuer") == "YieldMax" and d["ticker"] in ymd:
-            info = ymd[d["ticker"]]
-            if info.get("distribution_per_share") is not None:
-                items[-1]["distribution_per_share"] = info["distribution_per_share"]
-            # dates (best-effort)
-            for k in ["declaration_date","ex_dividend_date","record_date","pay_date"]:
-                if info.get(k):
-                    items[-1][k] = info[k]
-            if info.get("source_url"):
-                items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + "YieldMax PR"
+    if d.get("issuer") == "YieldMax" and d["ticker"] in ymd:
+        info = ymd[d["ticker"]]
+        if info.get("distribution_per_share") is not None:
+            items[-1]["distribution_per_share"] = info["distribution_per_share"]
 
+        # dates (best-effort)
+        for k in ["declaration_date", "ex_dividend_date", "record_date", "pay_date"]:
+            if info.get(k):
+                items[-1][k] = info[k]
 
-        # final safety net: weekly-only
-        items = [
-            x for x in items
-            if (
-                str(x.get("frequency", "")).lower() == "weekly"
-                or x.get("issuer") == "GraniteShares"
+        if info.get("source_url"):
+            items[-1]["notes"] = (
+                items[-1].get("notes", "")
+                + (" | " if items[-1].get("notes") else "")
+                + info["source_url"]
             )
-        ]
-        return items           
+
+    # -----------------------------
+    # FINAL SAFETY NET (weekly-only)
+    # -----------------------------
+    items = [
+        x for x in items
+        if (
+            str(x.get("frequency", "")).lower() == "weekly"
+            or x.get("issuer") == "GraniteShares"
+        )
+    ]
+
+    return items    
 
 
 
