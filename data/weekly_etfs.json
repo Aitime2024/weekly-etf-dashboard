@@ -1,10 +1,9 @@
 {
-  "generated_at": "2026-01-19 23:43 UTC",
+  "generated_at": "2026-01-19 23:55 UTC",
   "items": [
     {
       "ticker": "ABNY",
       "etf_name": "YieldMax ABNB Option Income Strategy ETF",
-      "name": "YieldMax ABNB Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -25,12 +24,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "AIYY",
       "etf_name": "YieldMax AI Option Income Strategy ETF",
-      "name": "YieldMax AI Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -51,12 +49,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "AMDY",
       "etf_name": "YieldMax AMD Option Income Strategy ETF",
-      "name": "YieldMax AMD Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -77,12 +74,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "AMZY",
       "etf_name": "YieldMax AMZN Option Income ETF",
-      "name": "YieldMax AMZN Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -103,12 +99,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "APLY",
       "etf_name": "YieldMax AAPL Option Income ETF",
-      "name": "YieldMax AAPL Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -129,12 +124,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "BABO",
       "etf_name": "YieldMax BABA Option Income Strategy ETF",
-      "name": "YieldMax BABA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -155,12 +149,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "BRKC",
       "etf_name": "YieldMax BRK.B Option Income ETF",
-      "name": "YieldMax BRK.B Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -181,12 +174,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "CONY",
       "etf_name": "YieldMax COIN Option Income Strategy ETF",
-      "name": "YieldMax COIN Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -207,12 +199,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "CRCO",
       "etf_name": "YieldMax CRCL Option Income Strategy ETF",
-      "name": "YieldMax CRCL Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -233,12 +224,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "CVNY",
       "etf_name": "YieldMax CVNA Option Income Strategy ETF",
-      "name": "YieldMax CVNA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -259,12 +249,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "DISO",
       "etf_name": "YieldMax DIS Option Income ETF",
-      "name": "YieldMax DIS Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -285,12 +274,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "DRAY",
       "etf_name": "YieldMax DKNG Option Income Strategy ETF",
-      "name": "YieldMax DKNG Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -311,12 +299,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "FBY",
       "etf_name": "YieldMax META Option Income ETF",
-      "name": "YieldMax META Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -337,12 +324,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "GDXY",
       "etf_name": "YieldMax Gold Miners Option Income Strategy ETF",
-      "name": "YieldMax Gold Miners Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Sector or Theme",
       "distribution_per_share": null,
@@ -363,12 +349,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "GMEY",
       "etf_name": "YieldMax GME Option Income Strategy ETF",
-      "name": "YieldMax GME Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -389,12 +374,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "GOOY",
       "etf_name": "YieldMax GOOGL Option Income ETF",
-      "name": "YieldMax GOOGL Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -415,12 +399,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "HIYY",
       "etf_name": "YieldMax HIMS Option Income Strategy ETF",
-      "name": "YieldMax HIMS Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -441,12 +424,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "HOOY",
       "etf_name": "YieldMax HOOD Option Income Strategy ETF",
-      "name": "YieldMax HOOD Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -467,12 +449,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "JPMO",
       "etf_name": "YieldMax JPM Option Income Strategy ETF",
-      "name": "YieldMax JPM Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -493,12 +474,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "MARO",
       "etf_name": "YieldMax MARA Option Income Strategy ETF",
-      "name": "YieldMax MARA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -519,12 +499,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "MRNY",
       "etf_name": "YieldMax MRNA Option Income Strategy ETF",
-      "name": "YieldMax MRNA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -545,12 +524,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "MSFO",
       "etf_name": "YieldMax MSFT Option Income ETF",
-      "name": "YieldMax MSFT Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -571,12 +549,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "MSTY",
       "etf_name": "YieldMax MSTR Option Income Strategy ETF",
-      "name": "YieldMax MSTR Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -597,12 +574,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "NFLY",
       "etf_name": "YieldMax NFLX Option Income Strategy ETF",
-      "name": "YieldMax NFLX Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -623,12 +599,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "NVDY",
       "etf_name": "YieldMax NVDA Option Income Strategy ETF",
-      "name": "YieldMax NVDA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -649,12 +624,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "OARK",
       "etf_name": "YieldMax Innovation Option Income Strategy ETF",
-      "name": "YieldMax Innovation Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -675,12 +649,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "PLTY",
       "etf_name": "YieldMax PLTR Option Income Strategy ETF",
-      "name": "YieldMax PLTR Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -701,12 +674,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "PYPY",
       "etf_name": "YieldMax PYPL Option Income Strategy ETF",
-      "name": "YieldMax PYPL Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -727,12 +699,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "RBLY",
       "etf_name": "YieldMax RBLX Option Income Strategy ETF",
-      "name": "YieldMax RBLX Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -753,12 +724,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "RDYY",
       "etf_name": "YieldMax RDDT Option Income Strategy ETF",
-      "name": "YieldMax RDDT Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -779,12 +749,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "SMCY",
       "etf_name": "YieldMax SMCI Option Income Strategy ETF",
-      "name": "YieldMax SMCI Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -805,12 +774,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "SNOY",
       "etf_name": "YieldMax SNOW Option Income Strategy ETF",
-      "name": "YieldMax SNOW Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -831,12 +799,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "TSLY",
       "etf_name": "YieldMax TSLA Option Income Strategy ETF",
-      "name": "YieldMax TSLA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -857,12 +824,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "TSMY",
       "etf_name": "YieldMax TSM Option Income Strategy ETF",
-      "name": "YieldMax TSM Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -883,12 +849,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "XOMO",
       "etf_name": "YieldMax XOM Option Income ETF",
-      "name": "YieldMax XOM Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -909,12 +874,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "XYZY",
       "etf_name": "YieldMax XYZ Option Income Strategy ETF",
-      "name": "YieldMax XYZ Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -935,12 +899,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "YBIT",
       "etf_name": "YieldMax Bitcoin Option Income Strategy ETF",
-      "name": "YieldMax Bitcoin Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -961,12 +924,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "CRSH",
       "etf_name": "YieldMax Short TSLA Option Income Strategy ETF",
-      "name": "YieldMax Short TSLA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -987,12 +949,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "DIPS",
       "etf_name": "YieldMax Short NVDA Option Income Strategy ETF",
-      "name": "YieldMax Short NVDA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1013,12 +974,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "FIAT",
       "etf_name": "YieldMax Short COIN Option Income Strategy ETF",
-      "name": "YieldMax Short COIN Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1039,12 +999,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "WNTR",
       "etf_name": "YieldMax MSTR Short Option Income Strategy ETF",
-      "name": "YieldMax MSTR Short Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1065,12 +1024,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "YQQQ",
       "etf_name": "YieldMax Short N100 Option Income Strategy ETF",
-      "name": "YieldMax Short N100 Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1091,12 +1049,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "YMAG",
       "etf_name": "YieldMax Magnificent 7 Fund of Option Income ETF",
-      "name": "YieldMax Magnificent 7 Fund of Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Multi-Sector",
       "distribution_per_share": null,
@@ -1117,12 +1074,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "YMAX",
       "etf_name": "YieldMax Universe Fund of Option Income ETF",
-      "name": "YieldMax Universe Fund of Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Multi-Sector",
       "distribution_per_share": null,
@@ -1143,12 +1099,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "SLTY",
       "etf_name": "YieldMax Ultra Short Option Income Strategy ETF",
-      "name": "YieldMax Ultra Short Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Multi-Sector",
       "distribution_per_share": null,
@@ -1169,12 +1124,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "ULTY",
       "etf_name": "YieldMax Ultra Option Income Strategy ETF",
-      "name": "YieldMax Ultra Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Multi-Sector",
       "distribution_per_share": null,
@@ -1195,12 +1149,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "FEAT",
       "etf_name": "YieldMax Dorsey Wright Featured 5 Income ETF",
-      "name": "YieldMax Dorsey Wright Featured 5 Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Brand-Name Index",
       "distribution_per_share": null,
@@ -1221,12 +1174,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "FIVY",
       "etf_name": "YieldMax Dorsey Wright Hybrid 5 Income ETF",
-      "name": "YieldMax Dorsey Wright Hybrid 5 Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Brand-Name Index",
       "distribution_per_share": null,
@@ -1247,12 +1199,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "QDTY",
       "etf_name": "YieldMax Nasdaq 100 0DTE Covered Call Strategy ETF",
-      "name": "YieldMax Nasdaq 100 0DTE Covered Call Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1273,12 +1224,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "RDTY",
       "etf_name": "YieldMax R2000 0DTE Covered Call Strategy ETF",
-      "name": "YieldMax R2000 0DTE Covered Call Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1299,12 +1249,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "SDTY",
       "etf_name": "YieldMax SP 500 0DTE Covered Call Strategy ETF",
-      "name": "YieldMax SP 500 0DTE Covered Call Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1325,12 +1274,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "CHPY",
       "etf_name": "YieldMax Semiconductor Portfolio Option Income ETF",
-      "name": "YieldMax Semiconductor Portfolio Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Sector or Theme",
       "distribution_per_share": null,
@@ -1351,12 +1299,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "GPTY",
       "etf_name": "YieldMax AI and Tech Portfolio Option Income ETF",
-      "name": "YieldMax AI and Tech Portfolio Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Sector or Theme",
       "distribution_per_share": null,
@@ -1377,12 +1324,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "LFGY",
       "etf_name": "YieldMax Crypto Industry and Tech Portfolio Option Income ETF",
-      "name": "YieldMax Crypto Industry and Tech Portfolio Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Sector or Theme",
       "distribution_per_share": null,
@@ -1403,12 +1349,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "MSST",
       "etf_name": "YieldMax MSTR Performance & Distribution Target 25\u2122 ETF",
-      "name": "YieldMax MSTR Performance & Distribution Target 25\u2122 ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1429,12 +1374,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "NVIT",
       "etf_name": "YieldMax NVDA Performance & Distribution Target 25\u2122 ETF",
-      "name": "YieldMax NVDA Performance & Distribution Target 25\u2122 ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1455,12 +1399,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
     },
     {
       "ticker": "TEST",
       "etf_name": "YieldMax TSLA Performance & Distribution Target 25\u2122 ETF",
-      "name": "YieldMax TSLA Performance & Distribution Target 25\u2122 ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1481,12 +1424,61 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via YieldMax Our ETFs (tight)"
+      "notes": "Discovered via YieldMax Our ETFs"
+    },
+    {
+      "ticker": "QVHY",
+      "etf_name": null,
+      "issuer": "GraniteShares",
+      "reference_asset": null,
+      "distribution_per_share": null,
+      "frequency": "Weekly",
+      "declaration_date": null,
+      "ex_dividend_date": null,
+      "record_date": null,
+      "pay_date": null,
+      "nav_official": null,
+      "price_proxy": null,
+      "price_chg_ex_1w_pct": null,
+      "price_chg_ex_1m_pct": null,
+      "dist_chg_ex_1w_pct": null,
+      "dist_chg_ex_1m_pct": null,
+      "nav_chg_ex_1w_pct": null,
+      "nav_chg_ex_1m_pct": null,
+      "days_since_ex_div": null,
+      "dist_sum_8w": null,
+      "dist_slope_8w": null,
+      "dist_stability_score": null,
+      "notes": "Discovered via GraniteShares YieldBOOST prospectus PDFs"
+    },
+    {
+      "ticker": "UYYY",
+      "etf_name": null,
+      "issuer": "GraniteShares",
+      "reference_asset": null,
+      "distribution_per_share": null,
+      "frequency": "Weekly",
+      "declaration_date": null,
+      "ex_dividend_date": null,
+      "record_date": null,
+      "pay_date": null,
+      "nav_official": null,
+      "price_proxy": null,
+      "price_chg_ex_1w_pct": null,
+      "price_chg_ex_1m_pct": null,
+      "dist_chg_ex_1w_pct": null,
+      "dist_chg_ex_1m_pct": null,
+      "nav_chg_ex_1w_pct": null,
+      "nav_chg_ex_1m_pct": null,
+      "days_since_ex_div": null,
+      "dist_sum_8w": null,
+      "dist_slope_8w": null,
+      "dist_stability_score": null,
+      "notes": "Discovered via GraniteShares YieldBOOST prospectus PDFs"
     },
     {
       "ticker": "AAPW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1512,7 +1504,6 @@
     {
       "ticker": "AMDW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1538,7 +1529,6 @@
     {
       "ticker": "AMZW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1564,7 +1554,6 @@
     {
       "ticker": "ARMW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1590,7 +1579,6 @@
     {
       "ticker": "AVGW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1616,7 +1604,6 @@
     {
       "ticker": "BABW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1642,7 +1629,6 @@
     {
       "ticker": "BRKW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1668,7 +1654,6 @@
     {
       "ticker": "COIW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1694,7 +1679,6 @@
     {
       "ticker": "COSW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1720,7 +1704,6 @@
     {
       "ticker": "GDXW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1746,7 +1729,6 @@
     {
       "ticker": "GLDW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1772,7 +1754,6 @@
     {
       "ticker": "GOOW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1798,7 +1779,6 @@
     {
       "ticker": "HOOW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1824,7 +1804,6 @@
     {
       "ticker": "METW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1850,7 +1829,6 @@
     {
       "ticker": "MSFW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1876,7 +1854,6 @@
     {
       "ticker": "MSTW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1902,7 +1879,6 @@
     {
       "ticker": "NFLW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1928,7 +1904,6 @@
     {
       "ticker": "NVDW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1954,7 +1929,6 @@
     {
       "ticker": "PLTW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1980,7 +1954,6 @@
     {
       "ticker": "TSLW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -2006,7 +1979,6 @@
     {
       "ticker": "TSYW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -2032,7 +2004,6 @@
     {
       "ticker": "UBEW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -2058,7 +2029,6 @@
     {
       "ticker": "UNHW",
       "etf_name": null,
-      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
