@@ -830,15 +830,15 @@ def build_items():
                 items[-1]["notes"] = (items[-1].get("notes","") + " | " if items[-1].get("notes") else "") + "YieldMax PR"
 
 
-    # final safety net: weekly-only
-    items = [
-        x for x in items
-        if (
-            str(x.get("frequency", "")).lower() == "weekly"
-            or x.get("issuer") == "GraniteShares"
-        )
-    ]
-    return items           
+        # final safety net: weekly-only
+        items = [
+            x for x in items
+            if (
+                str(x.get("frequency", "")).lower() == "weekly"
+                or x.get("issuer") == "GraniteShares"
+            )
+        ]
+        return items           
 
 
 
