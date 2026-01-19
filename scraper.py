@@ -832,13 +832,13 @@ def build_items():
 
     # final safety net: weekly-only
     items = [
-    x for x in items
-    if (
-        str(x.get("frequency", "")).lower() == "weekly"
-        or x.get("issuer") == "GraniteShares"
-    )
-]
-return items
+        x for x in items
+        if (
+            str(x.get("frequency", "")).lower() == "weekly"
+            or x.get("issuer") == "GraniteShares"
+        )
+    ]
+    return items           
 
 
 
