@@ -605,30 +605,36 @@ def graniteshares_discover_yieldboost() -> List[Dict]:
     def is_weekly_near_ticker(t: str) -> bool:
         return re.search(rf"{t}.{{0,120}}Weekly", blob, flags=re.IGNORECASE | re.DOTALL) is not None
 
-    tickers = [t for t in tickers if is_weekly_near_ticker(t)]
+def graniteshares_discover_yieldboost() -> List[Dict]:
+    # Primary: product guide PDF (regex scan)
+    pdf_url = "https://graniteshares.com/media/us4pi2qq/graniteshares-product-guide.pdf"
+    try:
+        r = requests.get(pdf_url, timeout=30, headers=UA)
+        r.raise_for_status()
+        blob = r.content.decode("latin-1", errors="ignore")
+    except Exception:
+        return []
+
+    # Find tickers that look like YieldBOOST tickers (many end with Y; allow YY too)
+    candidates = sorted(set(re.findall(r"\b[A-Z]{3,5}Y{1,2}\b", blob)))
+
+    # Weekly-only filter: require "Weekly" near ticker in PDF text
+    def is_weekly_near_ticker(t: str) -> bool:
+        return re.search(rf"{t}.{{0,200}}Weekly", blob, flags=re.IGNORECASE | re.DOTALL) is not None
+
+    tickers = [t for t in candidates if is_weekly_near_ticker(t)]
 
     items = [{
-        "ticker": t, "issuer": "GraniteShares", "frequency": "Weekly",
-        "name": None, "reference_asset": None,
+        "ticker": t,
+        "issuer": "GraniteShares",
+        "frequency": "Weekly",
+        "name": None,
+        "reference_asset": None,
         "notes": "Discovered via GraniteShares YieldBOOST (weekly-only)"
     } for t in tickers]
+
     return dedupe(items)
-
-# --- Calculations ---
-def pct_change(new, old):
-    if new is None or old is None:
-        return None
-    try:
-        new, old = float(new), float(old)
-        if old == 0 or isnan(old):
-            return None
-        return (new - old) / old * 100
-    except Exception:
-        return None
-
-def clamp(x, lo, hi):
-    return max(lo, min(hi, x))
-
+    
 def stability_score_from_dist(dists):
     dists = [float(x) for x in dists if x is not None]
     if len(dists) < 4:
