@@ -744,16 +744,23 @@ def build_items() -> List[Dict]:
     try:
         manual = json.loads(Path("data/manual_tickers.json").read_text(encoding="utf-8"))
         for m in manual:
+            t = str(m.get("ticker", "")).strip().upper()
+            if not t:
+                continue
+         
+            issuer = (m.get("issuer") or "").strip()
+            if not issuer:
+                issuer = "GraniteShares"  # sensible default for your use case
             discovered.append({
-                "ticker": str(m.get("ticker","")).upper(),
-                "issuer": m.get("issuer"),
-                "frequency": "Weekly",
-                "name": None,
-                "reference_asset": None,
-                "notes": "Manually added"
+                "ticker": t,
+                "issuer": issuer,
+                "frequency": (m.get("frequency") or "Weekly"),
+                "name": m.get("name"),
+                "reference_asset": m.get("reference_asset"),
+                "notes": m.get("notes") or "Manually added"
             })
     except Exception:
-        pass   
+        pass
         
     # De-dupe after all discover
     discovered = dedupe(discovered)
