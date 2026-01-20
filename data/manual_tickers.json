@@ -1,1 +1,23 @@
-
+[
+  {"ticker":"AMYY","issuer":"GraniteShares","name":"YieldBOOST AMD","reference_asset":"AMD"},
+  {"ticker":"AZYY","issuer":"GraniteShares","name":"YieldBOOST Amazon","reference_asset":"AMZN"},
+  {"ticker":"BBYY","issuer":"GraniteShares","name":"YieldBOOST Alibaba","reference_asset":"BABA"},
+  {"ticker":"COYY","issuer":"GraniteShares","name":"YieldBOOST Coinbase","reference_asset":"COIN"},
+  {"ticker":"FBYY","issuer":"GraniteShares","name":"YieldBOOST Meta","reference_asset":"META"},
+  {"ticker":"HOYY","issuer":"GraniteShares","name":"YieldBOOST Robinhood","reference_asset":"HOOD"},
+  {"ticker":"IOYY","issuer":"GraniteShares","name":"YieldBOOST Alphabet","reference_asset":"GOOGL"},
+  {"ticker":"MAAY","issuer":"GraniteShares","name":"YieldBOOST Mastercard","reference_asset":"MA"},
+  {"ticker":"MTYY","issuer":"GraniteShares","name":"YieldBOOST MicroStrategy","reference_asset":"MSTR"},
+  {"ticker":"NVYY","issuer":"GraniteShares","name":"YieldBOOST NVIDIA","reference_asset":"NVDA"},
+  {"ticker":"PLYY","issuer":"GraniteShares","name":"YieldBOOST PayPal","reference_asset":"PYPL"},
+  {"ticker":"QBY","issuer":"GraniteShares","name":"YieldBOOST Qualcomm","reference_asset":"QCOM"},
+  {"ticker":"RGYY","issuer":"GraniteShares","name":"YieldBOOST Rigetti","reference_asset":"RGTI"},
+  {"ticker":"SEMY","issuer":"GraniteShares","name":"YieldBOOST Semiconductor","reference_asset":"Semiconductor"},
+  {"ticker":"SMYY","issuer":"GraniteShares","name":"YieldBOOST Super Micro Computer","reference_asset":"SMCI"},
+  {"ticker":"TQQY","issuer":"GraniteShares","name":"YieldBOOST TQQQ","reference_asset":"TQQQ"},
+  {"ticker":"TSYY","issuer":"GraniteShares","name":"YieldBOOST Tesla","reference_asset":"TSLA"},
+  {"ticker":"YSPY","issuer":"GraniteShares","name":"YieldBOOST S&P 500","reference_asset":"SPY"},
+  {"ticker":"XBTY","issuer":"GraniteShares","name":"YieldBOOST Bitcoin","reference_asset":"BTC"},
+  {"ticker":"YBST","issuer":"GraniteShares","name":"YieldBOOST Single Stock Universe ETF","reference_asset":"Single Stock Universe"},
+  {"ticker":"YBTY","issuer":"GraniteShares","name":"YieldBOOST Top Yielders ETF","reference_asset":"Top Yielders"}
+]
