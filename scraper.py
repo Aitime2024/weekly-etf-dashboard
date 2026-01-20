@@ -737,8 +737,27 @@ def build_items() -> List[Dict]:
     discovered += yieldmax_discover_weekly_tight()
     discovered += graniteshares_discover_yieldboost()
     discovered += roundhill_discover_weeklypay()
+   
+     # -----------------------------
+    # OPTION 1: Manual tickers
+    # ----------------------------
+    try:
+        manual = json.loads(Path("data/manual_tickers.json").read_text(encoding="utf-8"))
+        for m in manual:
+            discovered.append({
+                "ticker": str(m.get("ticker","")).upper(),
+                "issuer": m.get("issuer"),
+                "frequency": "Weekly",
+                "name": None,
+                "reference_asset": None,
+                "notes": "Manually added"
+            })
+    except Exception:
+        pass   
+        
+    # De-dupe after all discover
     discovered = dedupe(discovered)
-
+   
     # Debug counts in Actions log
     print(f"[discovery] YieldMax={len([d for d in discovered if d.get('issuer')=='YieldMax'])} "
           f"GraniteShares={len([d for d in discovered if d.get('issuer')=='GraniteShares'])} "
@@ -816,9 +835,9 @@ def build_items() -> List[Dict]:
 
         # GraniteShares fill: prefer official distribution table; then fund pages
         if issuer == "GraniteShares":
-            info = gsd.get(t) or gsd.get(t.upper())
+            info = gsd_fund.get(t) or gsd_fund.get(t.upper())
             if not info:
-                info = gsd_fund.get(t) or gsd_fund.get(t.upper())
+                info = gsd.get(t) or gsd.get(t.upper())
 
             if info:
                 if info.get("distribution_per_share") is not None:
