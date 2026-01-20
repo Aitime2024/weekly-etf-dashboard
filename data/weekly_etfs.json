@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-01-20 08:20 UTC",
+  "generated_at": "2026-01-20 09:01 UTC",
   "items": [
     {
       "ticker": "ABNY",
-      "etf_name": "YieldMax ABNB Option Income Strategy ETF",
+      "name": "YieldMax ABNB Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -28,7 +28,7 @@
     },
     {
       "ticker": "AIYY",
-      "etf_name": "YieldMax AI Option Income Strategy ETF",
+      "name": "YieldMax AI Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -53,7 +53,7 @@
     },
     {
       "ticker": "AMDY",
-      "etf_name": "YieldMax AMD Option Income Strategy ETF",
+      "name": "YieldMax AMD Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -78,7 +78,7 @@
     },
     {
       "ticker": "AMZY",
-      "etf_name": "YieldMax AMZN Option Income ETF",
+      "name": "YieldMax AMZN Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -103,7 +103,7 @@
     },
     {
       "ticker": "APLY",
-      "etf_name": "YieldMax AAPL Option Income ETF",
+      "name": "YieldMax AAPL Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -128,7 +128,7 @@
     },
     {
       "ticker": "BABO",
-      "etf_name": "YieldMax BABA Option Income Strategy ETF",
+      "name": "YieldMax BABA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -153,7 +153,7 @@
     },
     {
       "ticker": "BRKC",
-      "etf_name": "YieldMax BRK.B Option Income ETF",
+      "name": "YieldMax BRK.B Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -178,7 +178,7 @@
     },
     {
       "ticker": "CONY",
-      "etf_name": "YieldMax COIN Option Income Strategy ETF",
+      "name": "YieldMax COIN Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -203,7 +203,7 @@
     },
     {
       "ticker": "CRCO",
-      "etf_name": "YieldMax CRCL Option Income Strategy ETF",
+      "name": "YieldMax CRCL Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -228,7 +228,7 @@
     },
     {
       "ticker": "CVNY",
-      "etf_name": "YieldMax CVNA Option Income Strategy ETF",
+      "name": "YieldMax CVNA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -253,7 +253,7 @@
     },
     {
       "ticker": "DISO",
-      "etf_name": "YieldMax DIS Option Income ETF",
+      "name": "YieldMax DIS Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -278,7 +278,7 @@
     },
     {
       "ticker": "DRAY",
-      "etf_name": "YieldMax DKNG Option Income Strategy ETF",
+      "name": "YieldMax DKNG Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -303,7 +303,7 @@
     },
     {
       "ticker": "FBY",
-      "etf_name": "YieldMax META Option Income ETF",
+      "name": "YieldMax META Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -328,7 +328,7 @@
     },
     {
       "ticker": "GDXY",
-      "etf_name": "YieldMax Gold Miners Option Income Strategy ETF",
+      "name": "YieldMax Gold Miners Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Sector or Theme",
       "distribution_per_share": null,
@@ -353,7 +353,7 @@
     },
     {
       "ticker": "GMEY",
-      "etf_name": "YieldMax GME Option Income Strategy ETF",
+      "name": "YieldMax GME Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -378,7 +378,7 @@
     },
     {
       "ticker": "GOOY",
-      "etf_name": "YieldMax GOOGL Option Income ETF",
+      "name": "YieldMax GOOGL Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -403,7 +403,7 @@
     },
     {
       "ticker": "HIYY",
-      "etf_name": "YieldMax HIMS Option Income Strategy ETF",
+      "name": "YieldMax HIMS Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -428,7 +428,7 @@
     },
     {
       "ticker": "HOOY",
-      "etf_name": "YieldMax HOOD Option Income Strategy ETF",
+      "name": "YieldMax HOOD Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -453,7 +453,7 @@
     },
     {
       "ticker": "JPMO",
-      "etf_name": "YieldMax JPM Option Income Strategy ETF",
+      "name": "YieldMax JPM Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -478,7 +478,7 @@
     },
     {
       "ticker": "MARO",
-      "etf_name": "YieldMax MARA Option Income Strategy ETF",
+      "name": "YieldMax MARA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -503,7 +503,7 @@
     },
     {
       "ticker": "MRNY",
-      "etf_name": "YieldMax MRNA Option Income Strategy ETF",
+      "name": "YieldMax MRNA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -528,7 +528,7 @@
     },
     {
       "ticker": "MSFO",
-      "etf_name": "YieldMax MSFT Option Income ETF",
+      "name": "YieldMax MSFT Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -553,7 +553,7 @@
     },
     {
       "ticker": "MSTY",
-      "etf_name": "YieldMax MSTR Option Income Strategy ETF",
+      "name": "YieldMax MSTR Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -578,7 +578,7 @@
     },
     {
       "ticker": "NFLY",
-      "etf_name": "YieldMax NFLX Option Income Strategy ETF",
+      "name": "YieldMax NFLX Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -603,7 +603,7 @@
     },
     {
       "ticker": "NVDY",
-      "etf_name": "YieldMax NVDA Option Income Strategy ETF",
+      "name": "YieldMax NVDA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -628,7 +628,7 @@
     },
     {
       "ticker": "OARK",
-      "etf_name": "YieldMax Innovation Option Income Strategy ETF",
+      "name": "YieldMax Innovation Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -653,7 +653,7 @@
     },
     {
       "ticker": "PLTY",
-      "etf_name": "YieldMax PLTR Option Income Strategy ETF",
+      "name": "YieldMax PLTR Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -678,7 +678,7 @@
     },
     {
       "ticker": "PYPY",
-      "etf_name": "YieldMax PYPL Option Income Strategy ETF",
+      "name": "YieldMax PYPL Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -703,7 +703,7 @@
     },
     {
       "ticker": "RBLY",
-      "etf_name": "YieldMax RBLX Option Income Strategy ETF",
+      "name": "YieldMax RBLX Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -728,7 +728,7 @@
     },
     {
       "ticker": "RDYY",
-      "etf_name": "YieldMax RDDT Option Income Strategy ETF",
+      "name": "YieldMax RDDT Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -753,7 +753,7 @@
     },
     {
       "ticker": "SMCY",
-      "etf_name": "YieldMax SMCI Option Income Strategy ETF",
+      "name": "YieldMax SMCI Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -778,7 +778,7 @@
     },
     {
       "ticker": "SNOY",
-      "etf_name": "YieldMax SNOW Option Income Strategy ETF",
+      "name": "YieldMax SNOW Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -803,7 +803,7 @@
     },
     {
       "ticker": "TSLY",
-      "etf_name": "YieldMax TSLA Option Income Strategy ETF",
+      "name": "YieldMax TSLA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -828,7 +828,7 @@
     },
     {
       "ticker": "TSMY",
-      "etf_name": "YieldMax TSM Option Income Strategy ETF",
+      "name": "YieldMax TSM Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -853,7 +853,7 @@
     },
     {
       "ticker": "XOMO",
-      "etf_name": "YieldMax XOM Option Income ETF",
+      "name": "YieldMax XOM Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -878,7 +878,7 @@
     },
     {
       "ticker": "XYZY",
-      "etf_name": "YieldMax XYZ Option Income Strategy ETF",
+      "name": "YieldMax XYZ Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -903,7 +903,7 @@
     },
     {
       "ticker": "YBIT",
-      "etf_name": "YieldMax Bitcoin Option Income Strategy ETF",
+      "name": "YieldMax Bitcoin Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -928,7 +928,7 @@
     },
     {
       "ticker": "CRSH",
-      "etf_name": "YieldMax Short TSLA Option Income Strategy ETF",
+      "name": "YieldMax Short TSLA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -953,7 +953,7 @@
     },
     {
       "ticker": "DIPS",
-      "etf_name": "YieldMax Short NVDA Option Income Strategy ETF",
+      "name": "YieldMax Short NVDA Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -978,7 +978,7 @@
     },
     {
       "ticker": "FIAT",
-      "etf_name": "YieldMax Short COIN Option Income Strategy ETF",
+      "name": "YieldMax Short COIN Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1003,7 +1003,7 @@
     },
     {
       "ticker": "WNTR",
-      "etf_name": "YieldMax MSTR Short Option Income Strategy ETF",
+      "name": "YieldMax MSTR Short Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1028,7 +1028,7 @@
     },
     {
       "ticker": "YQQQ",
-      "etf_name": "YieldMax Short N100 Option Income Strategy ETF",
+      "name": "YieldMax Short N100 Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1053,7 +1053,7 @@
     },
     {
       "ticker": "YMAG",
-      "etf_name": "YieldMax Magnificent 7 Fund of Option Income ETF",
+      "name": "YieldMax Magnificent 7 Fund of Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Multi-Sector",
       "distribution_per_share": null,
@@ -1078,7 +1078,7 @@
     },
     {
       "ticker": "YMAX",
-      "etf_name": "YieldMax Universe Fund of Option Income ETF",
+      "name": "YieldMax Universe Fund of Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Multi-Sector",
       "distribution_per_share": null,
@@ -1103,7 +1103,7 @@
     },
     {
       "ticker": "SLTY",
-      "etf_name": "YieldMax Ultra Short Option Income Strategy ETF",
+      "name": "YieldMax Ultra Short Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Multi-Sector",
       "distribution_per_share": null,
@@ -1128,7 +1128,7 @@
     },
     {
       "ticker": "ULTY",
-      "etf_name": "YieldMax Ultra Option Income Strategy ETF",
+      "name": "YieldMax Ultra Option Income Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Multi-Sector",
       "distribution_per_share": null,
@@ -1153,7 +1153,7 @@
     },
     {
       "ticker": "FEAT",
-      "etf_name": "YieldMax Dorsey Wright Featured 5 Income ETF",
+      "name": "YieldMax Dorsey Wright Featured 5 Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Brand-Name Index",
       "distribution_per_share": null,
@@ -1178,7 +1178,7 @@
     },
     {
       "ticker": "FIVY",
-      "etf_name": "YieldMax Dorsey Wright Hybrid 5 Income ETF",
+      "name": "YieldMax Dorsey Wright Hybrid 5 Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Brand-Name Index",
       "distribution_per_share": null,
@@ -1203,7 +1203,7 @@
     },
     {
       "ticker": "QDTY",
-      "etf_name": "YieldMax Nasdaq 100 0DTE Covered Call Strategy ETF",
+      "name": "YieldMax Nasdaq 100 0DTE Covered Call Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1228,7 +1228,7 @@
     },
     {
       "ticker": "RDTY",
-      "etf_name": "YieldMax R2000 0DTE Covered Call Strategy ETF",
+      "name": "YieldMax R2000 0DTE Covered Call Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1253,7 +1253,7 @@
     },
     {
       "ticker": "SDTY",
-      "etf_name": "YieldMax SP 500 0DTE Covered Call Strategy ETF",
+      "name": "YieldMax SP 500 0DTE Covered Call Strategy ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1278,7 +1278,7 @@
     },
     {
       "ticker": "CHPY",
-      "etf_name": "YieldMax Semiconductor Portfolio Option Income ETF",
+      "name": "YieldMax Semiconductor Portfolio Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Sector or Theme",
       "distribution_per_share": null,
@@ -1303,7 +1303,7 @@
     },
     {
       "ticker": "GPTY",
-      "etf_name": "YieldMax AI and Tech Portfolio Option Income ETF",
+      "name": "YieldMax AI and Tech Portfolio Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Sector or Theme",
       "distribution_per_share": null,
@@ -1328,7 +1328,7 @@
     },
     {
       "ticker": "LFGY",
-      "etf_name": "YieldMax Crypto Industry and Tech Portfolio Option Income ETF",
+      "name": "YieldMax Crypto Industry and Tech Portfolio Option Income ETF",
       "issuer": "YieldMax",
       "reference_asset": "Sector or Theme",
       "distribution_per_share": null,
@@ -1353,7 +1353,7 @@
     },
     {
       "ticker": "MSST",
-      "etf_name": "YieldMax MSTR Performance & Distribution Target 25\u2122 ETF",
+      "name": "YieldMax MSTR Performance & Distribution Target 25\u2122 ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1378,7 +1378,7 @@
     },
     {
       "ticker": "NVIT",
-      "etf_name": "YieldMax NVDA Performance & Distribution Target 25\u2122 ETF",
+      "name": "YieldMax NVDA Performance & Distribution Target 25\u2122 ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1403,7 +1403,7 @@
     },
     {
       "ticker": "TEST",
-      "etf_name": "YieldMax TSLA Performance & Distribution Target 25\u2122 ETF",
+      "name": "YieldMax TSLA Performance & Distribution Target 25\u2122 ETF",
       "issuer": "YieldMax",
       "reference_asset": "Single Stock",
       "distribution_per_share": null,
@@ -1427,58 +1427,8 @@
       "notes": "Discovered via YieldMax Our ETFs"
     },
     {
-      "ticker": "QVHY",
-      "etf_name": null,
-      "issuer": "GraniteShares",
-      "reference_asset": null,
-      "distribution_per_share": null,
-      "frequency": "Weekly",
-      "declaration_date": null,
-      "ex_dividend_date": null,
-      "record_date": null,
-      "pay_date": null,
-      "nav_official": null,
-      "price_proxy": null,
-      "price_chg_ex_1w_pct": null,
-      "price_chg_ex_1m_pct": null,
-      "dist_chg_ex_1w_pct": null,
-      "dist_chg_ex_1m_pct": null,
-      "nav_chg_ex_1w_pct": null,
-      "nav_chg_ex_1m_pct": null,
-      "days_since_ex_div": null,
-      "dist_sum_8w": null,
-      "dist_slope_8w": null,
-      "dist_stability_score": null,
-      "notes": "Discovered via GraniteShares YieldBOOST prospectus PDFs"
-    },
-    {
-      "ticker": "UYYY",
-      "etf_name": null,
-      "issuer": "GraniteShares",
-      "reference_asset": null,
-      "distribution_per_share": null,
-      "frequency": "Weekly",
-      "declaration_date": null,
-      "ex_dividend_date": null,
-      "record_date": null,
-      "pay_date": null,
-      "nav_official": null,
-      "price_proxy": null,
-      "price_chg_ex_1w_pct": null,
-      "price_chg_ex_1m_pct": null,
-      "dist_chg_ex_1w_pct": null,
-      "dist_chg_ex_1m_pct": null,
-      "nav_chg_ex_1w_pct": null,
-      "nav_chg_ex_1m_pct": null,
-      "days_since_ex_div": null,
-      "dist_sum_8w": null,
-      "dist_slope_8w": null,
-      "dist_stability_score": null,
-      "notes": "Discovered via GraniteShares YieldBOOST prospectus PDFs"
-    },
-    {
       "ticker": "AAPW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1499,11 +1449,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/aapw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/aapw/"
     },
     {
       "ticker": "AMDW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1524,11 +1474,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/amdw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/amdw/"
     },
     {
       "ticker": "AMZW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1549,11 +1499,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/amzw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/amzw/"
     },
     {
       "ticker": "ARMW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1574,11 +1524,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/armw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/armw/"
     },
     {
       "ticker": "AVGW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1599,11 +1549,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/avgw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/avgw/"
     },
     {
       "ticker": "BABW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1624,11 +1574,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/babw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/babw/"
     },
     {
       "ticker": "BRKW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1649,11 +1599,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/brkw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/brkw/"
     },
     {
       "ticker": "COIW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1674,11 +1624,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/coiw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/coiw/"
     },
     {
       "ticker": "COSW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1699,11 +1649,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/cosw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/cosw/"
     },
     {
       "ticker": "GDXW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1724,11 +1674,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/gdxw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/gdxw/"
     },
     {
       "ticker": "GLDW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1749,11 +1699,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/gldw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/gldw/"
     },
     {
       "ticker": "GOOW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1774,11 +1724,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/goow/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/goow/"
     },
     {
       "ticker": "HOOW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1799,11 +1749,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/hoow/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/hoow/"
     },
     {
       "ticker": "METW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1824,11 +1774,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/metw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/metw/"
     },
     {
       "ticker": "MSFW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1849,11 +1799,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/msfw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/msfw/"
     },
     {
       "ticker": "MSTW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1874,11 +1824,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/mstw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/mstw/"
     },
     {
       "ticker": "NFLW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1899,11 +1849,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/nflw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/nflw/"
     },
     {
       "ticker": "NVDW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1924,11 +1874,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/nvdw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/nvdw/"
     },
     {
       "ticker": "PLTW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1949,11 +1899,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/pltw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/pltw/"
     },
     {
       "ticker": "TSLW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1974,11 +1924,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/tslw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/tslw/"
     },
     {
       "ticker": "TSYW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -1999,11 +1949,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/tsyw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/tsyw/"
     },
     {
       "ticker": "UBEW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -2024,11 +1974,11 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/ubew/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/ubew/"
     },
     {
       "ticker": "UNHW",
-      "etf_name": null,
+      "name": null,
       "issuer": "Roundhill",
       "reference_asset": null,
       "distribution_per_share": null,
@@ -2049,15 +1999,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Discovered via Roundhill WeeklyPay | https://www.roundhillinvestments.com/etf/unhw/"
+      "notes": "Discovered via Roundhill WeeklyPay page | https://www.roundhillinvestments.com/etf/unhw/"
     },
     {
       "ticker": "AMYY",
-      "etf_name": "YieldBOOST AMD",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "AMD",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2074,15 +2024,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/amyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/amyy/"
     },
     {
       "ticker": "AZYY",
-      "etf_name": "YieldBOOST Amazon",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "AMZN",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2099,15 +2049,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/azyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/azyy/"
     },
     {
       "ticker": "BBYY",
-      "etf_name": "YieldBOOST Alibaba",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "BABA",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2124,15 +2074,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/bbyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/bbyy/"
     },
     {
       "ticker": "COYY",
-      "etf_name": "YieldBOOST Coinbase",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "COIN",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2149,15 +2099,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/coyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/coyy/"
     },
     {
       "ticker": "FBYY",
-      "etf_name": "YieldBOOST Meta",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "META",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2174,15 +2124,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/fbyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/fbyy/"
     },
     {
       "ticker": "HOYY",
-      "etf_name": "YieldBOOST Robinhood",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "HOOD",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2199,15 +2149,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/hoyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/hoyy/"
     },
     {
       "ticker": "IOYY",
-      "etf_name": "YieldBOOST Alphabet",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "GOOGL",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2224,15 +2174,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/ioyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/ioyy/"
     },
     {
       "ticker": "MAAY",
-      "etf_name": "YieldBOOST Mastercard",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "MA",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2249,15 +2199,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/maay/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/maay/"
     },
     {
       "ticker": "MTYY",
-      "etf_name": "YieldBOOST MicroStrategy",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "MSTR",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2274,15 +2224,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/mtyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/mtyy/"
     },
     {
       "ticker": "NVYY",
-      "etf_name": "YieldBOOST NVIDIA",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "NVDA",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2299,15 +2249,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/nvyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/nvyy/"
     },
     {
       "ticker": "PLYY",
-      "etf_name": "YieldBOOST PayPal",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "PYPL",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2324,15 +2274,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/plyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/plyy/"
     },
     {
       "ticker": "QBY",
-      "etf_name": "YieldBOOST Qualcomm",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "QCOM",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2349,15 +2299,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/qby/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/qby/"
     },
     {
       "ticker": "RGYY",
-      "etf_name": "YieldBOOST Rigetti",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "RGTI",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2374,15 +2324,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/rgyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/rgyy/"
     },
     {
       "ticker": "SEMY",
-      "etf_name": "YieldBOOST Semiconductor",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "Semiconductor",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2399,15 +2349,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/semy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/semy/"
     },
     {
       "ticker": "SMYY",
-      "etf_name": "YieldBOOST Super Micro Computer",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "SMCI",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2424,15 +2374,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/smyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/smyy/"
     },
     {
       "ticker": "TQQY",
-      "etf_name": "YieldBOOST TQQQ",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "TQQQ",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2449,15 +2399,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/tqqy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/tqqy/"
     },
     {
       "ticker": "TSYY",
-      "etf_name": "YieldBOOST Tesla",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "TSLA",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2474,15 +2424,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/tsyy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/tsyy/"
     },
     {
       "ticker": "YSPY",
-      "etf_name": "YieldBOOST S&P 500",
+      "name": null,
       "issuer": "GraniteShares",
-      "reference_asset": "SPY",
+      "reference_asset": "S&P 500",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2499,15 +2449,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/yspy/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/yspy/"
     },
     {
       "ticker": "XBTY",
-      "etf_name": "YieldBOOST Bitcoin",
+      "name": null,
       "issuer": "GraniteShares",
-      "reference_asset": "BTC",
+      "reference_asset": "Bitcoin",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2524,15 +2474,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/xbty/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/xbty/"
     },
     {
       "ticker": "YBST",
-      "etf_name": "YieldBOOST Single Stock Universe ETF",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "Single Stock Universe",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2549,15 +2499,15 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/ybst/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/ybst/"
     },
     {
       "ticker": "YBTY",
-      "etf_name": "YieldBOOST Top Yielders ETF",
+      "name": null,
       "issuer": "GraniteShares",
       "reference_asset": "Top Yielders",
       "distribution_per_share": null,
-      "frequency": "Weekly",
+      "frequency": "Is",
       "declaration_date": null,
       "ex_dividend_date": null,
       "record_date": null,
@@ -2574,7 +2524,7 @@
       "dist_sum_8w": null,
       "dist_slope_8w": null,
       "dist_stability_score": null,
-      "notes": "Manually added | https://graniteshares.com/institutional/us/en-us/etfs/ybty/"
+      "notes": "GraniteShares weekly list (manual) | https://graniteshares.com/institutional/us/en-us/etfs/ybty/"
     }
   ]
 }
