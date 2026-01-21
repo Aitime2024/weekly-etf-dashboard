@@ -53,6 +53,13 @@ const fmtPctAccessible = (cell) => {
   return `<span class="${cls}">${icon} ${n.toFixed(2)}%</span>`;
 };
 
+// Div %/Share formatter (plain percent, not up/down arrows)
+const fmtDivPct = (cell) => {
+  const v = cell.getValue();
+  if (v === null || v === undefined || v === "" || Number.isNaN(Number(v))) return "—";
+  return `${Number(v).toFixed(2)}%`;
+};
+
 async function loadAlerts() {
   try {
     const r = await fetch("./data/alerts.json", { cache: "no-store" });
@@ -103,11 +110,30 @@ async function main() {
 
   document.getElementById("lastUpdated").textContent = `Last updated: ${payload.generated_at}`;
 
-  const rows = (payload.items || []).map(x => ({
-    ...x,
-    issuer_group: normalizeIssuer(x.issuer),
-    issuer_sort: issuerOrder[normalizeIssuer(x.issuer)] ?? 9,
-  }));
+  const rows = (payload.items || []).map(x => {
+    const issuer_group = normalizeIssuer(x.issuer);
+    const issuer_sort = issuerOrder[issuer_group] ?? 9;
+
+    // Use proxy price as the share price (since that's what you have in JSON)
+    const price = (x.price_proxy !== null && x.price_proxy !== undefined) ? Number(x.price_proxy) : null;
+    const dist = (x.distribution_per_share !== null && x.distribution_per_share !== undefined) ? Number(x.distribution_per_share) : null;
+
+    // Div %/Share = dist / price * 100
+    let div_pct_per_share = null;
+    if (Number.isFinite(price) && price > 0 && Number.isFinite(dist) && dist >= 0) {
+      div_pct_per_share = (dist / price) * 100;
+    }
+
+    return {
+      ...x,
+      issuer_group,
+      issuer_sort,
+
+      // New fields for the table
+      share_price: Number.isFinite(price) ? price : null,
+      div_pct_per_share,
+    };
+  });
 
   renderSummary(rows, payload.generated_at);
 
@@ -125,7 +151,14 @@ async function main() {
       { title: "Issuer", field: "issuer_group", width: 140 },
       { title: "Reference Asset", field: "reference_asset", width: 150 },
 
+      // ✅ NEW: Share Price BEFORE Distribution
+      { title: "Share Price", field: "share_price", width: 120, sorter: "number", formatter: fmt2 },
+
       { title: "Distribution/Share", field: "distribution_per_share", width: 160, sorter: "number", formatter: fmt4 },
+
+      // ✅ NEW: Div %/Share AFTER Distribution
+      { title: "Div %/Share", field: "div_pct_per_share", width: 120, sorter: "number", formatter: fmtDivPct },
+
       { title: "Frequency", field: "frequency", width: 110 },
 
       { title: "Declaration", field: "declaration_date", width: 120 },
