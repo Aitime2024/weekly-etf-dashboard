@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-21 03:38 UTC",
+  "generated_at": "2026-01-21 03:55 UTC",
   "items": [
     {
       "ticker": "ABNY",
@@ -14,7 +14,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/abny/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/abny/",
+      "distributionPerShare": 0.2873,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "AIYY",
@@ -29,7 +35,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/aiyy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/aiyy/",
+      "distributionPerShare": 0.185,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "AMDY",
@@ -44,7 +56,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/amdy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/amdy/",
+      "distributionPerShare": 0.3206,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "AMZY",
@@ -59,7 +77,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/amzy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/amzy/",
+      "distributionPerShare": 0.0959,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "APLY",
@@ -74,7 +98,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/aply/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/aply/",
+      "distributionPerShare": 0.0415,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "BABO",
@@ -89,7 +119,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/babo/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/babo/",
+      "distributionPerShare": 0.0864,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "BRKC",
@@ -104,7 +140,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/brkc/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/brkc/",
+      "distributionPerShare": 0.126,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "CONY",
@@ -119,7 +161,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/cony/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/cony/",
+      "distributionPerShare": 0.3965,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "CRCO",
@@ -134,7 +182,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/crco/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/crco/",
+      "distributionPerShare": 0.3418,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "CVNY",
@@ -149,7 +203,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/cvny/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/cvny/",
+      "distributionPerShare": 0.3134,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "DISO",
@@ -164,7 +224,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/diso/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/diso/",
+      "distributionPerShare": 0.0521,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "DRAY",
@@ -179,7 +245,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/dray/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/dray/",
+      "distributionPerShare": 0.1772,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "FBY",
@@ -194,7 +266,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/fby/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/fby/",
+      "distributionPerShare": 0.0583,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "GDXY",
@@ -209,7 +287,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/gdxy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/gdxy/",
+      "distributionPerShare": 0.1281,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "GMEY",
@@ -224,7 +308,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/gmey/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/gmey/",
+      "distributionPerShare": 0.3306,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "GOOY",
@@ -239,7 +329,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/gooy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/gooy/",
+      "distributionPerShare": 0.0981,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "HIYY",
@@ -254,7 +350,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/hiyy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/hiyy/",
+      "distributionPerShare": 0.2416,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "HOOY",
@@ -269,7 +371,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/hooy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/hooy/",
+      "distributionPerShare": 0.5501,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "JPMO",
@@ -284,7 +392,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/jpmo/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/jpmo/",
+      "distributionPerShare": 0.0768,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "MARO",
@@ -299,7 +413,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/maro/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/maro/",
+      "distributionPerShare": 0.1188,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "MRNY",
@@ -314,7 +434,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/mrny/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/mrny/",
+      "distributionPerShare": 0.2477,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "MSFO",
@@ -329,7 +455,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/msfo/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/msfo/",
+      "distributionPerShare": 0.0593,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "MSTY",
@@ -344,7 +476,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/msty/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/msty/",
+      "distributionPerShare": 0.4137,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "NFLY",
@@ -359,7 +497,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/nfly/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/nfly/",
+      "distributionPerShare": 0.0645,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "NVDY",
@@ -374,7 +518,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/nvdy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/nvdy/",
+      "distributionPerShare": 0.095,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "OARK",
@@ -389,7 +539,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/oark/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/oark/",
+      "distributionPerShare": 0.249,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "PLTY",
@@ -404,7 +560,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/plty/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/plty/",
+      "distributionPerShare": 0.413,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "PYPY",
@@ -419,7 +581,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/pypy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/pypy/",
+      "distributionPerShare": 0.2419,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "RBLY",
@@ -434,7 +602,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/rbly/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/rbly/",
+      "distributionPerShare": 0.2547,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "RDYY",
@@ -449,7 +623,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/rdyy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/rdyy/",
+      "distributionPerShare": 0.6558,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "SMCY",
@@ -464,7 +644,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/smcy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/smcy/",
+      "distributionPerShare": 0.086,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "SNOY",
@@ -479,7 +665,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/snoy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/snoy/",
+      "distributionPerShare": 0.0674,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "TSLY",
@@ -494,7 +686,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/tsly/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/tsly/",
+      "distributionPerShare": 0.3495,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "TSMY",
@@ -509,7 +707,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/tsmy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/tsmy/",
+      "distributionPerShare": 0.1387,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "XOMO",
@@ -524,7 +728,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/xomo/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/xomo/",
+      "distributionPerShare": 0.0669,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "XYZY",
@@ -539,7 +749,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/xyzy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/xyzy/",
+      "distributionPerShare": 0.3775,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "YBIT",
@@ -554,7 +770,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/ybit/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/ybit/",
+      "distributionPerShare": 0.2358,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "CRSH",
@@ -569,7 +791,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/crsh/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/crsh/",
+      "distributionPerShare": 0.2422,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "DIPS",
@@ -584,7 +812,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/dips/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/dips/",
+      "distributionPerShare": 0.3628,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "FIAT",
@@ -599,7 +833,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/fiat/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/fiat/",
+      "distributionPerShare": 0.2449,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "WNTR",
@@ -614,7 +854,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/wntr/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/wntr/",
+      "distributionPerShare": 0.5767,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "YQQQ",
@@ -629,7 +875,13 @@
       "pay_date": "2026-01-16",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/yqqq/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/yqqq/",
+      "distributionPerShare": 0.0373,
+      "declaration": "2026-01-14",
+      "exDividend": "2026-01-15",
+      "record": "2026-01-15",
+      "pay": "2026-01-16",
+      "price": null
     },
     {
       "ticker": "YMAG",
@@ -644,7 +896,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/ymag/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/ymag/",
+      "distributionPerShare": 0.0857,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "YMAX",
@@ -659,7 +917,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/ymax/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/ymax/",
+      "distributionPerShare": 0.0824,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "SLTY",
@@ -674,7 +938,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/slty/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/slty/",
+      "distributionPerShare": 0.3528,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "ULTY",
@@ -689,7 +959,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/ulty/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/ulty/",
+      "distributionPerShare": 0.5054,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "FEAT",
@@ -704,7 +980,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/feat/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/feat/",
+      "distributionPerShare": 0.3016,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "FIVY",
@@ -719,7 +1001,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/fivy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/fivy/",
+      "distributionPerShare": 0.1895,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "QDTY",
@@ -734,7 +1022,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/qdty/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/qdty/",
+      "distributionPerShare": 0.2605,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "RDTY",
@@ -749,7 +1043,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/rdty/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/rdty/",
+      "distributionPerShare": 0.2594,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "SDTY",
@@ -764,7 +1064,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/sdty/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/sdty/",
+      "distributionPerShare": 0.2014,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "CHPY",
@@ -779,7 +1085,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/chpy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/chpy/",
+      "distributionPerShare": 0.5267,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "GPTY",
@@ -794,7 +1106,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/gpty/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/gpty/",
+      "distributionPerShare": 0.2915,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "LFGY",
@@ -809,7 +1127,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/lfgy/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/lfgy/",
+      "distributionPerShare": 0.2822,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "MSST",
@@ -824,7 +1148,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/msst/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/msst/",
+      "distributionPerShare": 0.2157,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "NVIT",
@@ -839,7 +1169,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/nvit/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/nvit/",
+      "distributionPerShare": 0.2389,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "TEST",
@@ -854,7 +1190,13 @@
       "pay_date": "2026-01-22",
       "nav_official": null,
       "price_proxy": null,
-      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/test/"
+      "notes": "Discovered via YieldMax Our ETFs | https://yieldmaxetfs.com/our-etfs/test/",
+      "distributionPerShare": 0.2476,
+      "declaration": "2026-01-20",
+      "exDividend": "2026-01-21",
+      "record": "2026-01-21",
+      "pay": "2026-01-22",
+      "price": null
     },
     {
       "ticker": "AAPW",
