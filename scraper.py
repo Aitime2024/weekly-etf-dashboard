@@ -547,7 +547,14 @@ def build_items() -> List[Dict]:
                 if info.get(k):
                     row[k] = info[k]
             row["notes"] = (row["notes"] + (" | " if row["notes"] else "") + info.get("source_url", "")).strip()
-
+           
+            # ---- Frontend compatibility fields ----
+            row["distributionPerShare"] = row["distribution_per_share"]
+            row["declaration"] = row["declaration_date"]
+            row["exDividend"] = row["ex_dividend_date"]
+            row["record"] = row["record_date"]
+            row["pay"] = row["pay_date"]
+            row["price"] = row["price_proxy"]
         items.append(row)
 
     # Weekly only
@@ -559,7 +566,7 @@ def build_items() -> List[Dict]:
         if isinstance(prev, dict) and isinstance(prev.get("items"), list) and len(prev["items"]) >= 20:
             items = prev["items"]
             print(f"[fallback] restored previous snapshot, count={len(items)}")
-
+    
     return items
 
 
