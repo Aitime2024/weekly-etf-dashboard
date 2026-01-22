@@ -1,16 +1,19 @@
 # scraper.py
 # Weekly Pay ETF Dashboard scraper (YieldMax + Roundhill + GraniteShares YieldBOOST)
-# - Discovers weekly ETFs from issuer list pages
-# - Optionally merges manual tickers from data/manual_tickers.json
-# - Enriches distribution + dates from issuer distribution sources / fund pages
-# - Pulls share prices for ALL tickers from Yahoo (batch)
-# - Writes data/weekly_etfs.json (frontend reads this) + data/items.json (backup/fallback)
-# - Keeps history snapshots + alerts
+# - Discovers weekly ETFs from your issuer links
+# - Merges manual tickers from data/manual_tickers.json (optional but recommended)
+# - Enriches distribution + declaration/ex/record/pay dates from issuer pages
+# - Uses Yahoo Finance for ALL share prices (batch)
+# - Adds derived columns:
+#     * div_pct_per_share = distribution_per_share / share_price * 100
+#     * payout_per_1000   = (1000 / share_price) * distribution_per_share
+# - Writes: data/weekly_etfs.json (frontend reads) and data/items.json (backup/fallback)
+# - Keeps: history snapshots + comparisons + alerts
 
 import json
 import re
-import statistics
 import time
+import statistics
 from datetime import datetime, timezone, date
 from pathlib import Path
 from collections import defaultdict
@@ -24,7 +27,7 @@ from bs4 import BeautifulSoup
 # ----------------------------
 
 OUTFILE_PRIMARY = "data/weekly_etfs.json"
-OUTFILE_LEGACY = "data/items.json"          # keep for fallback / compatibility
+OUTFILE_BACKUP = "data/items.json"
 ALERTS_FILE = "data/alerts.json"
 ALERT_DROP_PCT = -15.0
 
@@ -63,10 +66,12 @@ def norm_space(s: str) -> str:
     return re.sub(r"\s+", " ", str(s or "")).strip()
 
 
-def _parse_float(s: str) -> Optional[float]:
+def _parse_float(s) -> Optional[float]:
     if s is None:
         return None
     s = str(s).strip().replace("$", "").replace(",", "")
+    if s in ("", "—", "-", "N/A", "n/a"):
+        return None
     try:
         return float(s)
     except Exception:
@@ -76,35 +81,15 @@ def _parse_float(s: str) -> Optional[float]:
 def _parse_date_to_iso(s: str) -> Optional[str]:
     if not s:
         return None
-    s = norm_space(s)
+    s = norm_space(str(s))
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+        return s
     import datetime as _dt
-
-    # common formats we see on issuer sites
-    fmts = (
-        "%Y-%m-%d",
-        "%m/%d/%Y",
-        "%m/%d/%y",
-        "%B %d, %Y",
-        "%b %d, %Y",
-        "%B %d %Y",
-        "%b %d %Y",
-    )
-    for fmt in fmts:
+    for fmt in ("%B %d, %Y", "%b %d, %Y", "%m/%d/%Y", "%m/%d/%y"):
         try:
             return _dt.datetime.strptime(s, fmt).date().isoformat()
         except Exception:
             pass
-
-    # last-resort: try to extract "Mon dd, yyyy"
-    m = re.search(r"([A-Za-z]{3,9})\s+(\d{1,2}),\s*(\d{4})", s)
-    if m:
-        try:
-            return _dt.datetime.strptime(f"{m.group(1)} {m.group(2)}, {m.group(3)}", "%B %d, %Y").date().isoformat()
-        except Exception:
-            try:
-                return _dt.datetime.strptime(f"{m.group(1)} {m.group(2)}, {m.group(3)}", "%b %d, %Y").date().isoformat()
-            except Exception:
-                pass
     return None
 
 
@@ -123,7 +108,6 @@ def fetch_text(url: str) -> str:
     if url in _FETCH_CACHE:
         return _FETCH_CACHE[url]
 
-    # polite throttle
     now = time.time()
     dt = now - _LAST_FETCH_AT
     if dt < _MIN_FETCH_INTERVAL_SEC:
@@ -162,50 +146,56 @@ def dedupe(items: List[Dict]) -> List[Dict]:
 # Yahoo prices (batch)
 # ----------------------------
 
-def yahoo_batch_quotes(tickers: List[str]) -> Dict[str, float]:
+def yahoo_batch_prices(tickers: List[str]) -> Dict[str, Optional[float]]:
     """
-    Fetch prices for many tickers from Yahoo in batches.
-    Returns { TICKER: price }
+    Fetch prices for tickers from Yahoo in batches.
+    Returns { TICKER: regularMarketPrice or None }.
     """
-    out: Dict[str, float] = {}
+    out: Dict[str, Optional[float]] = {}
+    tickers = [t.upper().strip() for t in tickers if t]
     if not tickers:
         return out
 
     base = "https://query1.finance.yahoo.com/v7/finance/quote?symbols="
     headers = {"User-Agent": UA["User-Agent"], "Accept": "application/json"}
+    chunk_size = 100
 
-    tickers = [t.upper().strip() for t in tickers if t]
-    BATCH = 80
-
-    for i in range(0, len(tickers), BATCH):
-        batch = tickers[i:i + BATCH]
+    for i in range(0, len(tickers), chunk_size):
+        chunk = tickers[i:i + chunk_size]
         try:
-            r = requests.get(base + ",".join(batch), headers=headers, timeout=20)
+            r = requests.get(base + ",".join(chunk), headers=headers, timeout=20)
             r.raise_for_status()
-            data = r.json().get("quoteResponse", {}).get("result", [])
-        except Exception:
-            continue
+            data = r.json()
+            results = ((data.get("quoteResponse") or {}).get("result") or [])
+            got = set()
 
-        for q in data:
-            sym = (q.get("symbol") or "").upper()
-            price = q.get("regularMarketPrice")
-            if sym and price is not None:
-                try:
-                    out[sym] = float(price)
-                except Exception:
-                    pass
+            for row in results:
+                sym = str(row.get("symbol") or "").upper().strip()
+                px = row.get("regularMarketPrice")
+                if sym:
+                    out[sym] = _parse_float(px)
+                    got.add(sym)
+
+            for sym in chunk:
+                if sym not in got and sym not in out:
+                    out[sym] = None
+
+        except Exception:
+            for sym in chunk:
+                out.setdefault(sym, None)
 
     return out
 
 
 # ----------------------------
-# YieldMax discovery + enrichment
+# Discovery (your issuer links)
 # ----------------------------
 
 def yieldmax_discover_weekly_from_our_etfs() -> List[Dict]:
     """
-    Discover weekly YieldMax ETFs from https://yieldmaxetfs.com/our-etfs/
-    This page typically contains a table with Distribution Frequency.
+    Discover weekly YieldMax ETFs from:
+      https://yieldmaxetfs.com/our-etfs/
+    by scanning tables for "Distribution Frequency" == Weekly.
     """
     url = "https://yieldmaxetfs.com/our-etfs/"
     soup = fetch_soup(url)
@@ -216,19 +206,20 @@ def yieldmax_discover_weekly_from_our_etfs() -> List[Dict]:
         if not headers:
             continue
         header_blob = " ".join(headers)
-        if "ticker" not in header_blob or "distribution" not in header_blob:
+        if "ticker" not in header_blob or "distribution frequency" not in header_blob:
             continue
 
         def find_idx(needle: str):
-            for i, h in enumerate(headers):
+            for j, h in enumerate(headers):
                 if needle in h:
-                    return i
+                    return j
             return None
 
         idx_ticker = find_idx("ticker")
-        idx_name = find_idx("etf")
-        idx_ref = find_idx("reference")
-        idx_freq = find_idx("frequency")
+        idx_name = find_idx("etf name")
+        idx_ref = find_idx("reference asset")
+        idx_freq = find_idx("distribution frequency")
+
         if idx_ticker is None or idx_freq is None:
             continue
 
@@ -237,14 +228,14 @@ def yieldmax_discover_weekly_from_our_etfs() -> List[Dict]:
             if not tds:
                 continue
 
-            def cell(i):
-                if i is None or i >= len(tds):
+            def cell(k):
+                if k is None or k >= len(tds):
                     return None
-                return norm_space(tds[i].get_text(" ", strip=True)) or None
+                return norm_space(tds[k].get_text(" ", strip=True)) or None
 
             ticker = cell(idx_ticker)
             freq = (cell(idx_freq) or "")
-            if not ticker:
+            if not ticker or not freq:
                 continue
             if freq.strip().lower() != "weekly":
                 continue
@@ -261,98 +252,10 @@ def yieldmax_discover_weekly_from_our_etfs() -> List[Dict]:
     return dedupe(items)
 
 
-def yieldmax_fund_url(ticker: str) -> str:
-    return f"https://yieldmaxetfs.com/our-etfs/{ticker.lower()}/"
-
-
-def yieldmax_parse_fund_page_latest(ticker: str) -> Dict:
-    """
-    Best-effort parse a YieldMax fund page for latest distribution row.
-    Many pages include a distribution table with dates and amount.
-    We try to find any table whose headers include ex-dividend/pay/record and $/share or distribution.
-    """
-    url = yieldmax_fund_url(ticker)
-    try:
-        soup = fetch_soup(url)
-    except Exception:
-        return {}
-
-    # Try to find a table with relevant headers
-    for tbl in soup.find_all("table"):
-        ths = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
-        if not ths:
-            continue
-
-        has_ex = any("ex" in h and "div" in h for h in ths) or any("ex-" in h for h in ths) or any("ex date" in h for h in ths)
-        has_pay = any("pay" in h for h in ths)
-        has_rec = any("record" in h for h in ths)
-        has_amt = any("amount" in h for h in ths) or any("distribution" in h for h in ths) or any("per share" in h for h in ths) or any("$" in h and "share" in h for h in ths)
-
-        if not (has_ex and has_pay and has_amt):
-            continue
-
-        # pick first data row
-        tbody = tbl.find("tbody")
-        row = tbody.find("tr") if tbody else None
-        if not row:
-            trs = tbl.find_all("tr")
-            row = trs[1] if len(trs) > 1 else None
-        if not row:
-            continue
-
-        tds = [norm_space(td.get_text(" ", strip=True)) for td in row.find_all("td")]
-        if not tds:
-            continue
-
-        def idx_contains(substrs):
-            for i, h in enumerate(ths):
-                for s in substrs:
-                    if s in h:
-                        return i
-            return None
-
-        i_decl = idx_contains(["declaration"])
-        i_ex = idx_contains(["ex-div", "ex dividend", "ex-date", "ex date"])
-        i_rec = idx_contains(["record"])
-        i_pay = idx_contains(["pay"])
-        i_amt = idx_contains(["amount", "distribution", "per share", "$/share", "share"])
-
-        out = {"source_url": url}
-        if i_amt is not None and i_amt < len(tds):
-            out["distribution_per_share"] = _parse_float(tds[i_amt])
-        if i_decl is not None and i_decl < len(tds):
-            out["declaration_date"] = _parse_date_to_iso(tds[i_decl])
-        if i_ex is not None and i_ex < len(tds):
-            out["ex_dividend_date"] = _parse_date_to_iso(tds[i_ex])
-        if i_rec is not None and i_rec < len(tds):
-            out["record_date"] = _parse_date_to_iso(tds[i_rec])
-        if i_pay is not None and i_pay < len(tds):
-            out["pay_date"] = _parse_date_to_iso(tds[i_pay])
-
-        # if we got anything useful, return
-        if any(out.get(k) is not None for k in ["distribution_per_share", "ex_dividend_date", "pay_date", "record_date", "declaration_date"]):
-            return out
-
-    return {}
-
-
-def yieldmax_enrich_from_fund_pages(tickers: List[str]) -> Dict[str, Dict]:
-    out = {}
-    for t in tickers:
-        info = yieldmax_parse_fund_page_latest(t)
-        if info:
-            out[t] = info
-    return out
-
-
-# ----------------------------
-# Roundhill discovery + enrichment
-# ----------------------------
-
 def roundhill_discover_weeklypay() -> List[Dict]:
     """
     Discover Roundhill WeeklyPay tickers from:
-    https://www.roundhillinvestments.com/weeklypay-etfs
+      https://www.roundhillinvestments.com/weeklypay-etfs
     """
     url = "https://www.roundhillinvestments.com/weeklypay-etfs"
     soup = fetch_soup(url)
@@ -365,219 +268,11 @@ def roundhill_discover_weeklypay() -> List[Dict]:
         "frequency": "Weekly",
         "name": None,
         "reference_asset": None,
-        "notes": "Discovered via Roundhill WeeklyPay",
+        "notes": "Discovered via Roundhill WeeklyPay page",
     } for t in tickers]
 
     return dedupe(items)
 
-
-def roundhill_fund_url(ticker: str) -> str:
-    return f"https://www.roundhillinvestments.com/etf/{ticker.lower()}/"
-
-
-def _roundhill_find_table_by_heading(soup: BeautifulSoup, heading_text: str):
-    h = None
-    for tag in soup.find_all(["h1", "h2", "h3", "h4", "h5"]):
-        if heading_text.lower() in tag.get_text(" ", strip=True).lower():
-            h = tag
-            break
-    if not h:
-        return None
-    return h.find_next("table")
-
-
-def roundhill_weekly_calendar_and_latest_dist(ticker: str) -> Dict:
-    """
-    Parse Roundhill fund page for latest distribution record.
-    Prefers Distribution History (with amount), else Distribution Calendar.
-    """
-    url = roundhill_fund_url(ticker)
-    try:
-        soup = fetch_soup(url)
-    except Exception:
-        return {}
-
-    def to_iso_guess(d):
-        return _parse_date_to_iso(d)
-
-    hist = _roundhill_find_table_by_heading(soup, "Distribution History")
-    if hist:
-        rows = hist.find_all("tr")
-        if len(rows) >= 2:
-            tds = rows[1].find_all(["td", "th"])
-            vals = [norm_space(x.get_text(" ", strip=True)) for x in tds]
-            # Often: Declaration, Ex Date, Record Date, Pay Date, Amount Paid
-            out = {"source_url": url}
-            if len(vals) >= 4:
-                out["declaration_date"] = to_iso_guess(vals[0])
-                out["ex_dividend_date"] = to_iso_guess(vals[1])
-                out["record_date"] = to_iso_guess(vals[2])
-                out["pay_date"] = to_iso_guess(vals[3])
-            if len(vals) >= 5:
-                out["distribution_per_share"] = _parse_float(vals[4])
-            if any(out.get(k) is not None for k in ["distribution_per_share", "ex_dividend_date", "pay_date"]):
-                return out
-
-    cal = _roundhill_find_table_by_heading(soup, "Distribution Calendar")
-    if cal:
-        rows = cal.find_all("tr")
-        if len(rows) >= 2:
-            tds = rows[1].find_all(["td", "th"])
-            vals = [norm_space(x.get_text(" ", strip=True)) for x in tds]
-            out = {"source_url": url}
-            if len(vals) >= 4:
-                out["declaration_date"] = to_iso_guess(vals[0])
-                out["ex_dividend_date"] = to_iso_guess(vals[1])
-                out["record_date"] = to_iso_guess(vals[2])
-                out["pay_date"] = to_iso_guess(vals[3])
-            if any(out.get(k) is not None for k in ["ex_dividend_date", "pay_date"]):
-                return out
-
-    return {}
-
-
-def roundhill_weekly_distributions_and_dates(tickers: List[str]) -> Dict[str, Dict]:
-    out = {}
-    for t in tickers:
-        info = roundhill_weekly_calendar_and_latest_dist(t)
-        if info:
-            out[t] = info
-    return out
-
-
-# ----------------------------
-# GraniteShares discovery + enrichment
-# ----------------------------
-
-def graniteshares_discover_yieldboost_from_pdf() -> List[Dict]:
-    """
-    Discover GraniteShares YieldBOOST tickers by scanning product guide PDF
-    and requiring 'Weekly' near the ticker.
-    """
-    pdf_url = "https://graniteshares.com/media/us4pi2qq/graniteshares-product-guide.pdf"
-    try:
-        r = requests.get(pdf_url, timeout=30, headers=UA)
-        r.raise_for_status()
-        blob = r.content.decode("latin-1", errors="ignore")
-    except Exception:
-        return []
-
-    candidates = sorted(set(re.findall(r"\b[A-Z]{3,5}Y{1,2}\b", blob)))
-
-    def is_weekly_near(t: str) -> bool:
-        return re.search(rf"{t}.{{0,220}}Weekly", blob, flags=re.IGNORECASE | re.DOTALL) is not None
-
-    tickers = [t for t in candidates if is_weekly_near(t)]
-    items = [{
-        "ticker": t,
-        "issuer": "GraniteShares",
-        "frequency": "Weekly",
-        "name": None,
-        "reference_asset": None,
-        "notes": "Discovered via GraniteShares product guide PDF (weekly)",
-    } for t in tickers]
-
-    return dedupe(items)
-
-
-def graniteshares_distribution_page_url() -> str:
-    return "https://graniteshares.com/institutional/us/en-us/underlyings/distribution/"
-
-
-def graniteshares_parse_distribution_table() -> Dict[str, Dict]:
-    """
-    Parse GraniteShares official distribution table page.
-    Returns per ticker: distribution_per_share + dates (ex/record/pay if available)
-    """
-    url = graniteshares_distribution_page_url()
-    try:
-        soup = fetch_soup(url)
-    except Exception:
-        return {}
-
-    # Find the most relevant table
-    best = None
-    best_score = -1
-
-    for tbl in soup.find_all("table"):
-        headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
-        if not headers:
-            continue
-        blob = " ".join(headers)
-
-        score = 0
-        if "ticker" in blob:
-            score += 2
-        if "frequency" in blob:
-            score += 1
-        if "distribution" in blob:
-            score += 2
-        if "payment" in blob or "pay" in blob:
-            score += 1
-        if "ex" in blob:
-            score += 1
-
-        if score > best_score:
-            best = tbl
-            best_score = score
-
-    if not best:
-        return {}
-
-    headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in best.find_all("th")]
-
-    def idx_of(preds: List[str]) -> Optional[int]:
-        for i, h in enumerate(headers):
-            for p in preds:
-                if p in h:
-                    return i
-        return None
-
-    i_ticker = idx_of(["ticker"])
-    i_freq = idx_of(["frequency"])
-    i_dist = idx_of(["distribution per share", "distribution", "amount"])
-    i_ex = idx_of(["ex-date", "ex date", "ex-div", "ex dividend"])
-    i_rec = idx_of(["record"])
-    i_pay = idx_of(["payment date", "pay date", "payment", "pay"])
-
-    out: Dict[str, Dict] = {}
-
-    for tr in best.find_all("tr"):
-        tds = tr.find_all("td")
-        if not tds:
-            continue
-
-        def cell(i):
-            if i is None or i >= len(tds):
-                return None
-            return norm_space(tds[i].get_text(" ", strip=True)) or None
-
-        t = (cell(i_ticker) or "")
-        if not t:
-            continue
-        t = t.upper().strip()
-
-        freq = (cell(i_freq) or "")
-        if freq and freq.strip().lower() != "weekly":
-            # only keep weekly
-            continue
-
-        info = {"source_url": url}
-        info["distribution_per_share"] = _parse_float(cell(i_dist)) if cell(i_dist) else None
-        info["ex_dividend_date"] = _parse_date_to_iso(cell(i_ex)) if cell(i_ex) else None
-        info["record_date"] = _parse_date_to_iso(cell(i_rec)) if cell(i_rec) else None
-        info["pay_date"] = _parse_date_to_iso(cell(i_pay)) if cell(i_pay) else None
-
-        # If at least one field found, store
-        if any(info.get(k) is not None for k in ["distribution_per_share", "ex_dividend_date", "pay_date", "record_date"]):
-            out[t] = info
-
-    return out
-
-
-# ----------------------------
-# Manual tickers
-# ----------------------------
 
 def load_manual_tickers() -> List[Dict]:
     """
@@ -615,7 +310,242 @@ def load_manual_tickers() -> List[Dict]:
 
 
 # ----------------------------
-# History + comparisons (optional but useful)
+# Enrichment: YieldMax (fund pages)
+# ----------------------------
+
+def yieldmax_fund_url(ticker: str) -> str:
+    return f"https://yieldmaxetfs.com/our-etfs/{ticker.lower()}/"
+
+
+def yieldmax_parse_fund_page_latest(ticker: str) -> Dict:
+    """
+    Best-effort parse YieldMax fund page for latest distribution row:
+      - distribution_per_share
+      - declaration / ex / record / pay
+    """
+    url = yieldmax_fund_url(ticker)
+    try:
+        soup = fetch_soup(url)
+    except Exception:
+        return {}
+
+    for tbl in soup.find_all("table"):
+        ths = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
+        if not ths:
+            continue
+
+        blob = " ".join(ths)
+        has_ex = ("ex" in blob and ("div" in blob or "date" in blob))
+        has_pay = ("pay" in blob)
+        has_amt = ("distribution" in blob or "dividend" in blob or "per share" in blob or "$/share" in blob)
+
+        if not (has_ex and has_pay and has_amt):
+            continue
+
+        tbody = tbl.find("tbody")
+        row = tbody.find("tr") if tbody else None
+        if not row:
+            trs = tbl.find_all("tr")
+            row = trs[1] if len(trs) > 1 else None
+        if not row:
+            continue
+
+        tds = [norm_space(td.get_text(" ", strip=True)) for td in row.find_all("td")]
+        if not tds:
+            continue
+
+        def idx_contains(subs: List[str]) -> Optional[int]:
+            for i, h in enumerate(ths):
+                for s in subs:
+                    if s in h:
+                        return i
+            return None
+
+        i_dist = idx_contains(["distribution", "dividend", "amount", "per share", "share"])
+        i_decl = idx_contains(["declaration"])
+        i_ex   = idx_contains(["ex-div", "ex dividend", "ex-date", "ex date", "ex"])
+        i_rec  = idx_contains(["record"])
+        i_pay  = idx_contains(["pay"])
+
+        def val(i):
+            if i is None or i >= len(tds):
+                return None
+            return tds[i]
+
+        out = {"source_url": url}
+        if i_dist is not None:
+            out["distribution_per_share"] = _parse_float(val(i_dist))
+        if i_decl is not None:
+            out["declaration_date"] = _parse_date_to_iso(val(i_decl))
+        if i_ex is not None:
+            out["ex_dividend_date"] = _parse_date_to_iso(val(i_ex))
+        if i_rec is not None:
+            out["record_date"] = _parse_date_to_iso(val(i_rec))
+        if i_pay is not None:
+            out["pay_date"] = _parse_date_to_iso(val(i_pay))
+
+        if any(out.get(k) is not None for k in ["distribution_per_share", "ex_dividend_date", "pay_date", "record_date", "declaration_date"]):
+            return out
+
+    return {}
+
+
+def yieldmax_enrich_from_fund_pages(tickers: List[str]) -> Dict[str, Dict]:
+    out = {}
+    for t in tickers:
+        info = yieldmax_parse_fund_page_latest(t)
+        if info:
+            out[t] = info
+    return out
+
+
+# ----------------------------
+# Enrichment: Roundhill (fund pages)
+# ----------------------------
+
+def roundhill_fund_url(ticker: str) -> str:
+    return f"https://www.roundhillinvestments.com/etf/{ticker.lower()}/"
+
+
+def _roundhill_find_table_by_heading(soup: BeautifulSoup, heading_text: str):
+    h = None
+    for tag in soup.find_all(["h1", "h2", "h3", "h4", "h5"]):
+        if heading_text.lower() in tag.get_text(" ", strip=True).lower():
+            h = tag
+            break
+    if not h:
+        return None
+    return h.find_next("table")
+
+
+def roundhill_weekly_calendar_and_latest_dist(ticker: str) -> Dict:
+    """
+    Parse Roundhill fund page for latest distribution record.
+    Prefers Distribution History (with amount), else Distribution Calendar.
+    """
+    url = roundhill_fund_url(ticker)
+    try:
+        soup = fetch_soup(url)
+    except Exception:
+        return {}
+
+    hist = _roundhill_find_table_by_heading(soup, "Distribution History")
+    if hist:
+        rows = hist.find_all("tr")
+        if len(rows) >= 2:
+            tds = rows[1].find_all(["td", "th"])
+            vals = [norm_space(x.get_text(" ", strip=True)) for x in tds]
+            out = {"source_url": url}
+            if len(vals) >= 4:
+                out["declaration_date"] = _parse_date_to_iso(vals[0])
+                out["ex_dividend_date"] = _parse_date_to_iso(vals[1])
+                out["record_date"] = _parse_date_to_iso(vals[2])
+                out["pay_date"] = _parse_date_to_iso(vals[3])
+            if len(vals) >= 5:
+                out["distribution_per_share"] = _parse_float(vals[4])
+            if any(out.get(k) is not None for k in ["distribution_per_share", "ex_dividend_date", "pay_date"]):
+                return out
+
+    cal = _roundhill_find_table_by_heading(soup, "Distribution Calendar")
+    if cal:
+        rows = cal.find_all("tr")
+        if len(rows) >= 2:
+            tds = rows[1].find_all(["td", "th"])
+            vals = [norm_space(x.get_text(" ", strip=True)) for x in tds]
+            out = {"source_url": url}
+            if len(vals) >= 4:
+                out["declaration_date"] = _parse_date_to_iso(vals[0])
+                out["ex_dividend_date"] = _parse_date_to_iso(vals[1])
+                out["record_date"] = _parse_date_to_iso(vals[2])
+                out["pay_date"] = _parse_date_to_iso(vals[3])
+            if any(out.get(k) is not None for k in ["ex_dividend_date", "pay_date"]):
+                return out
+
+    return {}
+
+
+def roundhill_weekly_distributions_and_dates(tickers: List[str]) -> Dict[str, Dict]:
+    out = {}
+    for t in tickers:
+        info = roundhill_weekly_calendar_and_latest_dist(t)
+        if info:
+            out[t] = info
+    return out
+
+
+# ----------------------------
+# Enrichment: GraniteShares (distribution table)
+# ----------------------------
+
+def graniteshares_yieldboost_distribution_table() -> Dict[str, Dict]:
+    """
+    Parse GraniteShares distribution table:
+      https://graniteshares.com/institutional/us/en-us/underlyings/distribution/
+    Keep weekly frequency rows only.
+    """
+    url = "https://graniteshares.com/institutional/us/en-us/underlyings/distribution/"
+    try:
+        soup = fetch_soup(url)
+    except Exception:
+        return {}
+
+    table = None
+    for t in soup.find_all("table"):
+        hdr = " ".join([norm_space(th.get_text(" ", strip=True)) for th in t.find_all("th")]).lower()
+        if "ticker" in hdr and "distribution per share" in hdr and ("payment date" in hdr or "pay date" in hdr):
+            table = t
+            break
+    if not table:
+        return {}
+
+    headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in table.find_all("th")]
+
+    def idx_of(needle: str) -> Optional[int]:
+        for i, h in enumerate(headers):
+            if needle in h:
+                return i
+        return None
+
+    i_ticker = idx_of("ticker")
+    i_freq = idx_of("frequency")
+    i_dist = idx_of("distribution per share") or idx_of("distribution")
+    i_ex = idx_of("ex-date") or idx_of("ex date") or idx_of("ex")
+    i_rec = idx_of("record date") or idx_of("record")
+    i_pay = idx_of("payment date") or idx_of("pay date") or idx_of("payment") or idx_of("pay")
+
+    out: Dict[str, Dict] = {}
+
+    for tr in table.find_all("tr"):
+        tds = tr.find_all("td")
+        if not tds:
+            continue
+
+        def cell(i):
+            if i is None or i >= len(tds):
+                return None
+            return norm_space(tds[i].get_text(" ", strip=True)) or None
+
+        ticker = (cell(i_ticker) or "").upper().strip()
+        if not ticker:
+            continue
+        freq = (cell(i_freq) or "")
+        if freq and freq.strip().lower() != "weekly":
+            continue
+
+        info = {"source_url": url}
+        info["distribution_per_share"] = _parse_float(cell(i_dist))
+        info["ex_dividend_date"] = _parse_date_to_iso(cell(i_ex))
+        info["record_date"] = _parse_date_to_iso(cell(i_rec))
+        info["pay_date"] = _parse_date_to_iso(cell(i_pay))
+
+        if any(info.get(k) is not None for k in ["distribution_per_share", "ex_dividend_date", "pay_date", "record_date"]):
+            out[ticker] = info
+
+    return out
+
+
+# ----------------------------
+# History + comparisons (kept)
 # ----------------------------
 
 def write_history_snapshot(payload):
@@ -722,15 +652,14 @@ def compute_ex_div_comparisons(current_items):
 
         if prev_w:
             it["price_chg_ex_1w_pct"] = pct_change(latest["price"], prev_w["price"])
-            it["dist_chg_ex_1w_pct"] = pct_change(latest["dist"], prev_w["dist"])
-            it["nav_chg_ex_1w_pct"] = pct_change(latest["nav"], prev_w["nav"])
+            it["dist_chg_ex_1w_pct"]  = pct_change(latest["dist"],  prev_w["dist"])
+            it["nav_chg_ex_1w_pct"]   = pct_change(latest["nav"],   prev_w["nav"])
 
         if prev_m:
             it["price_chg_ex_1m_pct"] = pct_change(latest["price"], prev_m["price"])
-            it["dist_chg_ex_1m_pct"] = pct_change(latest["dist"], prev_m["dist"])
-            it["nav_chg_ex_1m_pct"] = pct_change(latest["nav"], prev_m["nav"])
+            it["dist_chg_ex_1m_pct"]  = pct_change(latest["dist"],  prev_m["dist"])
+            it["nav_chg_ex_1m_pct"]   = pct_change(latest["nav"],   prev_m["nav"])
 
-        # last 8 ex-div events (distinct ex-div dates)
         by_ex = {}
         for r in rows:
             by_ex[r["ex_div"]] = r
@@ -771,24 +700,21 @@ def generate_alerts(items):
 
 
 # ----------------------------
-# Build items (core)
+# Build items (core pipeline)
 # ----------------------------
 
 def build_items() -> List[Dict]:
     discovered: List[Dict] = []
 
-    # Discover from issuer sites
+    # Discover
     discovered += yieldmax_discover_weekly_from_our_etfs()
     discovered += roundhill_discover_weeklypay()
-    discovered += graniteshares_discover_yieldboost_from_pdf()
 
-    # Manual tickers (optional)
+    # Manual tickers (GraniteShares etc.)
     discovered += load_manual_tickers()
 
-    # De-dupe
     discovered = dedupe(discovered)
 
-    # Debug discovery counts (visible in GitHub Actions "Run scraper" log)
     ym_n = len([d for d in discovered if d.get("issuer") == "YieldMax"])
     rh_n = len([d for d in discovered if d.get("issuer") == "Roundhill"])
     gs_n = len([d for d in discovered if d.get("issuer") == "GraniteShares"])
@@ -796,16 +722,15 @@ def build_items() -> List[Dict]:
 
     # Prices for ALL discovered tickers (Yahoo)
     all_tickers = [d["ticker"] for d in discovered if d.get("ticker")]
-    yahoo_prices = yahoo_batch_quotes(all_tickers)
+    yahoo_prices = yahoo_batch_prices(all_tickers)
 
     # Enrichment maps
     ym_tickers = [d["ticker"] for d in discovered if d.get("issuer") == "YieldMax"]
     rh_tickers = [d["ticker"] for d in discovered if d.get("issuer") == "Roundhill"]
-    gs_tickers = [d["ticker"] for d in discovered if d.get("issuer") == "GraniteShares"]
 
     ym_map = yieldmax_enrich_from_fund_pages(ym_tickers)
     rh_map = roundhill_weekly_distributions_and_dates(rh_tickers)
-    gs_map = graniteshares_parse_distribution_table()
+    gs_map = graniteshares_yieldboost_distribution_table()
 
     print(f"[enrich] YieldMax fund pages={len(ym_map)} Roundhill fund pages={len(rh_map)} GraniteShares dist rows={len(gs_map)}")
 
@@ -821,21 +746,27 @@ def build_items() -> List[Dict]:
             "issuer": issuer,
             "reference_asset": d.get("reference_asset"),
 
-            "distribution_per_share": None,
             "frequency": "Weekly",
+
+            # raw scraped data
+            "distribution_per_share": None,
             "declaration_date": None,
             "ex_dividend_date": None,
             "record_date": None,
             "pay_date": None,
 
+            # optional
             "nav_official": None,
 
-            # Price fields
-            "price_proxy": None,     # kept for compatibility
-            "share_price": None,     # new field (frontend can use this)
-            "div_pct_per_share": None,
+            # Yahoo for ALL issuers
+            "share_price": yahoo_prices.get(t),
+            "price_proxy": yahoo_prices.get(t),  # compatibility with your existing frontend
 
-            # comparison fields (filled later)
+            # derived
+            "div_pct_per_share": None,
+            "payout_per_1000": None,  # NEW requested column
+
+            # comparisons (filled later)
             "price_chg_ex_1w_pct": None,
             "price_chg_ex_1m_pct": None,
             "dist_chg_ex_1w_pct": None,
@@ -850,51 +781,43 @@ def build_items() -> List[Dict]:
             "notes": d.get("notes") or "",
         }
 
-        # Set Yahoo price for ALL issuers
-        price = yahoo_prices.get(t)
-        row["price_proxy"] = price
-        row["share_price"] = price
+        # Fill issuer-specific enrichment
+        info = None
+        if issuer == "YieldMax":
+            info = ym_map.get(t)
+        elif issuer == "Roundhill":
+            info = rh_map.get(t)
+        elif issuer == "GraniteShares":
+            info = gs_map.get(t)
 
-        # Enrich per issuer
-        if issuer == "YieldMax" and t in ym_map:
-            info = ym_map[t]
+        if info:
             if info.get("distribution_per_share") is not None:
                 row["distribution_per_share"] = info["distribution_per_share"]
-            for k in ["declaration_date", "ex_dividend_date", "record_date", "pay_date"]:
+            for k in ("declaration_date", "ex_dividend_date", "record_date", "pay_date"):
                 if info.get(k):
                     row[k] = info[k]
             if info.get("source_url"):
                 row["notes"] = (row["notes"] + (" | " if row["notes"] else "") + info["source_url"])
 
-        elif issuer == "Roundhill" and t in rh_map:
-            info = rh_map[t]
-            if info.get("distribution_per_share") is not None:
-                row["distribution_per_share"] = info["distribution_per_share"]
-            for k in ["declaration_date", "ex_dividend_date", "record_date", "pay_date"]:
-                if info.get(k):
-                    row[k] = info[k]
-            if info.get("source_url"):
-                row["notes"] = (row["notes"] + (" | " if row["notes"] else "") + info["source_url"])
-
-        elif issuer == "GraniteShares" and t in gs_map:
-            info = gs_map[t]
-            if info.get("distribution_per_share") is not None:
-                row["distribution_per_share"] = info["distribution_per_share"]
-            for k in ["ex_dividend_date", "record_date", "pay_date"]:
-                if info.get(k):
-                    row[k] = info[k]
-            if info.get("source_url"):
-                row["notes"] = (row["notes"] + (" | " if row["notes"] else "") + info["source_url"])
-
-        # Compute div % / share (weekly distribution percent of current share price)
+        # Derived columns
+        sp = row.get("share_price")
         dist = row.get("distribution_per_share")
-        if dist is not None and price:
+
+        # Div %/Share = dist / share_price * 100
+        if sp not in (None, 0) and dist is not None:
             try:
-                row["div_pct_per_share"] = round((float(dist) / float(price)) * 100.0, 2)
+                row["div_pct_per_share"] = (float(dist) / float(sp)) * 100.0
             except Exception:
                 row["div_pct_per_share"] = None
 
-        # Optional frontend compatibility aliases (harmless if unused)
+        # Payout per $1000 = (1000 / share_price) * dist
+        if sp not in (None, 0) and dist is not None:
+            try:
+                row["payout_per_1000"] = (1000.0 / float(sp)) * float(dist)
+            except Exception:
+                row["payout_per_1000"] = None
+
+        # Optional compatibility aliases
         row["distributionPerShare"] = row["distribution_per_share"]
         row["declaration"] = row["declaration_date"]
         row["exDividend"] = row["ex_dividend_date"]
@@ -904,15 +827,15 @@ def build_items() -> List[Dict]:
 
         items.append(row)
 
-    # Weekly-only safety filter (keep weekly)
+    # Weekly-only filter (should already be weekly)
     items_weekly = [x for x in items if str(x.get("frequency", "")).lower() == "weekly"]
 
     # Do-not-nuke fallback: if scrape collapses, restore last good snapshot
     if len(items_weekly) < 20:
-        prev = read_json_if_exists(OUTFILE_LEGACY, None)
+        prev = read_json_if_exists(OUTFILE_BACKUP, None)
         if isinstance(prev, dict) and isinstance(prev.get("items"), list) and len(prev["items"]) >= 20:
             items_weekly = prev["items"]
-            print(f"[fallback] restored previous snapshot from {OUTFILE_LEGACY}, count={len(items_weekly)}")
+            print(f"[fallback] restored previous snapshot from {OUTFILE_BACKUP}, count={len(items_weekly)}")
         else:
             print("[fallback] no prior snapshot found (or too small); keeping current results")
 
@@ -944,8 +867,8 @@ def main():
     with open(OUTFILE_PRIMARY, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
 
-    # write legacy/backup output (used for fallback)
-    with open(OUTFILE_LEGACY, "w", encoding="utf-8") as f:
+    # write backup output (used for fallback)
+    with open(OUTFILE_BACKUP, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
 
     # alerts
@@ -957,7 +880,7 @@ def main():
             "alerts": alerts,
         }, f, indent=2)
 
-    print(f"Wrote {OUTFILE_PRIMARY} and {OUTFILE_LEGACY} with {len(items)} items; alerts={len(alerts)}")
+    print(f"Wrote {OUTFILE_PRIMARY} and {OUTFILE_BACKUP} with {len(items)} items; alerts={len(alerts)}")
 
 
 if __name__ == "__main__":
