@@ -1,5 +1,90 @@
 {
-  "generated_at": "2026-01-21 13:57 UTC",
+  "generated_at": "2026-01-22 07:06 UTC",
   "threshold_drop_pct": -15.0,
-  "alerts": []
+  "alerts": [
+    {
+      "ticker": "ABNY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -21.37,
+      "ex_dividend_date": "2026-01-22",
+      "message": "ABNY distribution down -21.37% vs prior ex-div week"
+    },
+    {
+      "ticker": "AMZY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -36.81,
+      "ex_dividend_date": "2026-01-22",
+      "message": "AMZY distribution down -36.81% vs prior ex-div week"
+    },
+    {
+      "ticker": "CONY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -44.04,
+      "ex_dividend_date": "2026-01-22",
+      "message": "CONY distribution down -44.04% vs prior ex-div week"
+    },
+    {
+      "ticker": "CVNY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -24.63,
+      "ex_dividend_date": "2026-01-22",
+      "message": "CVNY distribution down -24.63% vs prior ex-div week"
+    },
+    {
+      "ticker": "FBY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -19.9,
+      "ex_dividend_date": "2026-01-22",
+      "message": "FBY distribution down -19.90% vs prior ex-div week"
+    },
+    {
+      "ticker": "GMEY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -38.9,
+      "ex_dividend_date": "2026-01-22",
+      "message": "GMEY distribution down -38.90% vs prior ex-div week"
+    },
+    {
+      "ticker": "HOOY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -15.72,
+      "ex_dividend_date": "2026-01-22",
+      "message": "HOOY distribution down -15.72% vs prior ex-div week"
+    },
+    {
+      "ticker": "JPMO",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -26.17,
+      "ex_dividend_date": "2026-01-22",
+      "message": "JPMO distribution down -26.17% vs prior ex-div week"
+    },
+    {
+      "ticker": "RDYY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -40.09,
+      "ex_dividend_date": "2026-01-22",
+      "message": "RDYY distribution down -40.09% vs prior ex-div week"
+    },
+    {
+      "ticker": "TSLY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -18.03,
+      "ex_dividend_date": "2026-01-22",
+      "message": "TSLY distribution down -18.03% vs prior ex-div week"
+    },
+    {
+      "ticker": "XYZY",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -31.07,
+      "ex_dividend_date": "2026-01-22",
+      "message": "XYZY distribution down -31.07% vs prior ex-div week"
+    },
+    {
+      "ticker": "WNTR",
+      "type": "DIVIDEND_DROP_VS_1W",
+      "pct": -22.8,
+      "ex_dividend_date": "2026-01-22",
+      "message": "WNTR distribution down -22.80% vs prior ex-div week"
+    }
+  ]
 }
