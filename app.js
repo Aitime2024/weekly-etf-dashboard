@@ -150,7 +150,7 @@ async function main() {
       { title: "ETF Name", field: "name", minWidth: 260 },
       { title: "Issuer", field: "issuer_group", width: 140 },
       { title: "Reference Asset", field: "reference_asset", width: 150 },
-
+      { title: "Payout per $1000", field: "payout_per_1000", width: 150, sorter: "number", formatter: fmt2 },
       // ✅ NEW: Share Price BEFORE Distribution
       { title: "Share Price", field: "share_price", width: 120, sorter: "number", formatter: fmt2 },
 
