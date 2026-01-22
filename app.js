@@ -153,7 +153,10 @@ async function main() {
       { title: "Payout per $1000", field: "payout_per_1000", width: 150, sorter: "number", formatter: fmt2 },
       // ✅ NEW: Share Price BEFORE Distribution
       { title: "Share Price", field: "share_price", width: 120, sorter: "number", formatter: fmt2 },
+      { title: "Annualized Yield %", field: "annualized_yield_pct", width: 150, sorter: "number",
+        formatter: (c)=> c.getValue()==null ? "—" : `${Number(c.getValue()).toFixed(2)}%` },
 
+      { title: "Monthly / $1000", field: "monthly_income_per_1000", width: 140, sorter: "number", formatter: fmt2 },
       { title: "Distribution/Share", field: "distribution_per_share", width: 160, sorter: "number", formatter: fmt4 },
 
       // ✅ NEW: Div %/Share AFTER Distribution
