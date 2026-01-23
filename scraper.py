@@ -1,133 +1,46 @@
 import json
 import re
 import time
-import random
 import statistics
 from datetime import datetime, timezone, date
 from pathlib import Path
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 from typing import List, Dict, Optional, Tuple
-from urllib.parse import urlparse
 
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 
-# ============================================================
-# Primary Sources (WeeklyPayers)
-# ============================================================
-WEEKLYPAYERS_ROOT = "https://weeklypayers.com/"
-WEEKLYPAYERS_CAL  = "https://weeklypayers.com/calendar/"
-
-# ============================================================
-# Outputs
-# ============================================================
+# =========================
+# Config
+# =========================
 OUTFILE_PRIMARY = "data/weekly_etfs.json"   # UI reads this
-OUTFILE_BACKUP  = "data/items.json"         # fallback + history comparisons
+OUTFILE_BACKUP  = "data/items.json"        # fallback + history comparisons
 ALERTS_FILE     = "data/alerts.json"
-ALERT_DROP_PCT  = -15.0
 
-# If scraping fails, don't wipe your dataset:
+ALERT_DROP_PCT  = -15.0
 MIN_EXPECTED_ITEMS = 25
 
+USE_YAHOO_PRICES = False  # requested: keep disabled
+
+WEEKLYPAYERS_HOME = "https://weeklypayers.com/"
+WEEKLYPAYERS_CAL  = "https://weeklypayers.com/calendar/"
+
 UA = {
-    "User-Agent": "weekly-etf-dashboard/3.1 (+github-actions)",
+    "User-Agent": "weekly-etf-dashboard/3.0 (+github-actions)",
     "Accept": "text/html,application/json;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
 }
 
-# ============================================================
-# Prices: OFF (as requested)
-# ============================================================
-USE_YAHOO_PRICES = False  # <<< integrated per your request
-
-# ============================================================
-# HTTP: retries + per-domain throttle + bounded cache
-# ============================================================
-_SESSION: Optional[requests.Session] = None
-_FETCH_CACHE: "OrderedDict[str, str]" = OrderedDict()
-_FETCH_CACHE_MAX = 200
-_LAST_FETCH_AT_BY_DOMAIN: Dict[str, float] = {}
+_FETCH_CACHE: Dict[str, str] = {}
+_LAST_FETCH_AT = 0.0
 _MIN_FETCH_INTERVAL_SEC = 0.35
-_JITTER_SEC = 0.08
 
 
-def _get_session() -> requests.Session:
-    global _SESSION
-    if _SESSION is not None:
-        return _SESSION
-    s = requests.Session()
-    retry = Retry(
-        total=5,
-        connect=5,
-        read=5,
-        status=5,
-        backoff_factor=0.8,
-        status_forcelist=(429, 500, 502, 503, 504),
-        allowed_methods=frozenset(["GET", "HEAD"]),
-        respect_retry_after_header=True,
-        raise_on_status=False,
-    )
-    adapter = HTTPAdapter(max_retries=retry, pool_connections=20, pool_maxsize=50)
-    s.mount("https://", adapter)
-    s.mount("http://", adapter)
-    _SESSION = s
-    return s
-
-
-def _throttle(url: str) -> None:
-    domain = urlparse(url).netloc.lower()
-    now = time.time()
-    last = _LAST_FETCH_AT_BY_DOMAIN.get(domain, 0.0)
-    dt = now - last
-    min_dt = _MIN_FETCH_INTERVAL_SEC + random.random() * _JITTER_SEC
-    if dt < min_dt:
-        time.sleep(min_dt - dt)
-    _LAST_FETCH_AT_BY_DOMAIN[domain] = time.time()
-
-
-def http_get(url: str, *, timeout: int = 30, allow_cache: bool = True) -> requests.Response:
-    s = _get_session()
-    if allow_cache and url in _FETCH_CACHE:
-        r = requests.Response()
-        r.status_code = 200
-        r._content = _FETCH_CACHE[url].encode("utf-8", errors="ignore")
-        r.url = url
-        r.headers["Content-Type"] = "text/html; charset=utf-8"
-        return r
-
-    _throttle(url)
-    r = s.get(url, timeout=timeout, headers=UA)
-    r.raise_for_status()
-
-    if allow_cache:
-        _FETCH_CACHE[url] = r.text
-        _FETCH_CACHE.move_to_end(url)
-        while len(_FETCH_CACHE) > _FETCH_CACHE_MAX:
-            _FETCH_CACHE.popitem(last=False)
-
-    return r
-
-
-def fetch_text(url: str) -> str:
-    return http_get(url, timeout=30, allow_cache=True).text
-
-
-def fetch_soup(url: str) -> BeautifulSoup:
-    return BeautifulSoup(fetch_text(url), "lxml")
-
-
-# ============================================================
+# =========================
 # Helpers
-# ============================================================
-def norm_space(s: str) -> str:
-    return re.sub(r"\s+", " ", (s or "")).strip()
-
-
+# =========================
 def clamp(x: float, lo: float, hi: float) -> float:
     return max(lo, min(hi, x))
-
 
 def pct_change(a, b) -> Optional[float]:
     try:
@@ -141,6 +54,8 @@ def pct_change(a, b) -> Optional[float]:
     except Exception:
         return None
 
+def norm_space(s: str) -> str:
+    return re.sub(r"\s+", " ", (s or "")).strip()
 
 def _parse_float(s: str) -> Optional[float]:
     if s is None:
@@ -157,7 +72,6 @@ def _parse_float(s: str) -> Optional[float]:
     except Exception:
         return None
 
-
 def _parse_date_to_iso(s: str) -> Optional[str]:
     if not s:
         return None
@@ -170,14 +84,10 @@ def _parse_date_to_iso(s: str) -> Optional[str]:
             return datetime.strptime(t, fmt).date().isoformat()
         except Exception:
             pass
-    m = re.search(r"([A-Za-z]{3,9}\s+\d{1,2}[,\s]+\d{4})", t)
+    m = re.search(r"([A-Za-z]{3,9}\s+\d{1,2},\s+\d{4})", t)
     if m:
-        x = m.group(1).replace("  ", " ")
-        if "," not in x and re.search(r"\s\d{4}$", x):
-            x = re.sub(r"(\w+\s+\d{1,2})\s+(\d{4})$", r"\1, \2", x)
-        return _parse_date_to_iso(x)
+        return _parse_date_to_iso(m.group(1))
     return None
-
 
 def read_json_if_exists(path: Path, default):
     try:
@@ -187,186 +97,272 @@ def read_json_if_exists(path: Path, default):
         return default
     return default
 
+def write_json(path: Path, obj) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(obj, indent=2), encoding="utf-8")
 
-def dedupe(items: List[Dict]) -> List[Dict]:
+def fetch_text(url: str) -> str:
+    global _LAST_FETCH_AT
+    if url in _FETCH_CACHE:
+        return _FETCH_CACHE[url]
+
+    now = time.time()
+    dt = now - _LAST_FETCH_AT
+    if dt < _MIN_FETCH_INTERVAL_SEC:
+        time.sleep(_MIN_FETCH_INTERVAL_SEC - dt)
+
+    r = requests.get(url, timeout=30, headers=UA)
+    r.raise_for_status()
+    text = r.text
+    _FETCH_CACHE[url] = text
+    _LAST_FETCH_AT = time.time()
+    return text
+
+def fetch_soup(url: str) -> BeautifulSoup:
+    return BeautifulSoup(fetch_text(url), "lxml")
+
+def dedupe_by_ticker(items: List[Dict]) -> List[Dict]:
     seen = set()
     out = []
     for it in items:
-        key = (it.get("ticker"), it.get("issuer"))
-        if key in seen:
+        t = (it.get("ticker") or "").upper().strip()
+        if not t or t in seen:
             continue
-        seen.add(key)
+        seen.add(t)
         out.append(it)
     return out
 
 
-def normalize_ticker(t: str) -> Optional[str]:
-    t = (t or "").strip().upper()
-    if not t:
-        return None
-    if not re.match(r"^[A-Z][A-Z0-9.\-]{0,9}$", t):
-        return None
-    return t
+# =========================
+# WeeklyPayers parsing
+# =========================
+def weeklypayers_parse_weekly_table() -> List[Dict]:
+    """
+    Parse WeeklyPayers weekly dividend ETFs table from homepage.
+    Expected columns (as shown in your screenshot):
+      Ticker | Fund Manager | Current Price | Last Dividend | Ann. Yield % | ...
+    We only need: ticker, manager, current_price, last_dividend (dist), and optionally name.
+    """
+    soup = fetch_soup(WEEKLYPAYERS_HOME)
 
-
-# ============================================================
-# WeeklyPayers scraping (PRIMARY)
-# ============================================================
-def _find_best_table(soup: BeautifulSoup, required_keywords: List[str]) -> Optional[BeautifulSoup]:
+    # Find a table that looks like the "Weekly Dividend ETFs" table
+    target = None
     for tbl in soup.find_all("table"):
         headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
-        if not headers:
-            continue
         blob = " ".join(headers)
-        if all(k.lower() in blob for k in required_keywords):
-            return tbl
-    return None
+        if ("ticker" in blob and "fund manager" in blob and "current price" in blob and "last dividend" in blob):
+            target = tbl
+            break
 
+    if not target:
+        # Fallback: take the first table with "Ticker" and "Last Dividend"
+        for tbl in soup.find_all("table"):
+            headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
+            blob = " ".join(headers)
+            if ("ticker" in blob and "last dividend" in blob):
+                target = tbl
+                break
 
-def weeklypayers_discover_universe() -> List[Dict]:
-    soup = fetch_soup(WEEKLYPAYERS_ROOT)
-    items: List[Dict] = []
+    if not target:
+        return []
 
-    tbl = _find_best_table(soup, required_keywords=["ticker"])
-    if tbl:
-        headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
+    headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in target.find_all("th")]
 
-        def idx_of(keyword: str) -> Optional[int]:
-            for i, h in enumerate(headers):
-                if keyword in h:
-                    return i
-            return None
-
-        i_ticker = idx_of("ticker")
-        i_name = idx_of("name") or idx_of("fund") or idx_of("etf")
-        i_issuer = idx_of("issuer") or idx_of("provider") or idx_of("sponsor")
-
-        for tr in tbl.find_all("tr"):
-            tds = tr.find_all("td")
-            if not tds:
-                continue
-
-            def cell(i) -> Optional[str]:
-                if i is None or i >= len(tds):
-                    return None
-                return norm_space(tds[i].get_text(" ", strip=True)) or None
-
-            t = normalize_ticker(cell(i_ticker) or "")
-            if not t:
-                continue
-
-            items.append({
-                "ticker": t,
-                "issuer": cell(i_issuer) or "WeeklyPayers",
-                "name": cell(i_name),
-                "frequency": "Weekly",
-                "notes": "Discovered via weeklypayers.com",
-                "source_urls": [WEEKLYPAYERS_ROOT],
-            })
-
-    if len(items) < 5:
-        text = soup.get_text("\n", strip=True)
-        candidates = sorted(set(re.findall(r"\b[A-Z]{2,6}\b", text)))
-
-        for c in candidates:
-            if c in {"ETF", "ETFS", "DIV", "NAV", "USD", "FAQ", "HOME", "ABOUT", "BLOG"}:
-                continue
-            if not re.match(r"^[A-Z]{2,6}$", c):
-                continue
-            t = normalize_ticker(c)
-            if not t:
-                continue
-            items.append({
-                "ticker": t,
-                "issuer": "WeeklyPayers",
-                "name": None,
-                "frequency": "Weekly",
-                "notes": "Discovered via weeklypayers.com (regex fallback)",
-                "source_urls": [WEEKLYPAYERS_ROOT],
-            })
-
-    return dedupe(items)
-
-
-def weeklypayers_calendar_latest() -> Dict[str, Dict]:
-    soup = fetch_soup(WEEKLYPAYERS_CAL)
-
-    tbl = (
-        _find_best_table(soup, ["ticker", "ex"]) or
-        _find_best_table(soup, ["ticker", "pay"]) or
-        _find_best_table(soup, ["ticker", "record"]) or
-        _find_best_table(soup, ["ticker", "distribution"]) or
-        _find_best_table(soup, ["ticker", "amount"])
-    )
-    if not tbl:
-        return {}
-
-    headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
-
-    def idx_any(*needles) -> Optional[int]:
+    def idx_of(needle: str) -> Optional[int]:
         for i, h in enumerate(headers):
-            if any(n in h for n in needles):
+            if needle in h:
                 return i
         return None
 
-    idx_ticker = idx_any("ticker", "symbol")
-    idx_decl   = idx_any("declaration")
-    idx_ex     = idx_any("ex", "ex-date", "ex date")
-    idx_record = idx_any("record")
-    idx_pay    = idx_any("pay", "payment", "payable")
+    i_ticker  = idx_of("ticker")
+    i_mgr     = idx_of("fund manager") or idx_of("manager")
+    i_price   = idx_of("current price") or idx_of("price")
+    i_lastdiv = idx_of("last dividend") or idx_of("dividend")
+    i_name    = idx_of("fund") or idx_of("name")  # may not exist
 
-    idx_amt = None
-    for i, h in enumerate(headers):
-        if ("amount" in h) or ("distribution" in h and ("per" in h or "share" in h or "amount" in h)):
-            idx_amt = i
-            break
-
-    out: Dict[str, Dict] = {}
-
-    def rank_key(row: Dict) -> Tuple[str, str]:
-        return (row.get("ex_dividend_date") or "", row.get("pay_date") or "")
-
-    for tr in tbl.find_all("tr"):
+    out = []
+    for tr in target.find_all("tr"):
         tds = tr.find_all("td")
         if not tds:
             continue
 
-        def cell(i) -> Optional[str]:
+        def cell(i):
             if i is None or i >= len(tds):
                 return None
             return norm_space(tds[i].get_text(" ", strip=True)) or None
 
-        t = normalize_ticker(cell(idx_ticker) or "")
-        if not t:
+        ticker = cell(i_ticker)
+        if not ticker:
             continue
 
-        row = {
-            "source_url": WEEKLYPAYERS_CAL,
-            "distribution_per_share": _parse_float(cell(idx_amt)) if idx_amt is not None else None,
-            "declaration_date": _parse_date_to_iso(cell(idx_decl)),
-            "ex_dividend_date": _parse_date_to_iso(cell(idx_ex)),
-            "record_date": _parse_date_to_iso(cell(idx_record)),
-            "pay_date": _parse_date_to_iso(cell(idx_pay)),
-        }
+        # sometimes first "td" is a + expander, shifting columns; try to recover
+        # If ticker doesn't look like a symbol, attempt shift by 1
+        if not re.fullmatch(r"[A-Z]{1,6}", ticker.upper()):
+            if len(tds) >= 2:
+                maybe = norm_space(tds[1].get_text(" ", strip=True))
+                if re.fullmatch(r"[A-Z]{1,6}", maybe.upper()):
+                    # shift all indices by +1
+                    def cell_shifted(i):
+                        if i is None:
+                            return None
+                        return cell(i + 1)
+                    ticker = cell_shifted(i_ticker) or ticker
+                    mgr = cell_shifted(i_mgr)
+                    price = cell_shifted(i_price)
+                    last_div = cell_shifted(i_lastdiv)
+                    name = cell_shifted(i_name)
+                else:
+                    mgr = cell(i_mgr)
+                    price = cell(i_price)
+                    last_div = cell(i_lastdiv)
+                    name = cell(i_name)
+            else:
+                mgr = cell(i_mgr)
+                price = cell(i_price)
+                last_div = cell(i_lastdiv)
+                name = cell(i_name)
+        else:
+            mgr = cell(i_mgr)
+            price = cell(i_price)
+            last_div = cell(i_lastdiv)
+            name = cell(i_name)
 
-        if t not in out or rank_key(row) > rank_key(out[t]):
-            out[t] = row
+        ticker_u = ticker.upper().strip()
+        px = _parse_float(price)
+        dist = _parse_float(last_div)
 
-    return out
+        out.append({
+            "ticker": ticker_u,
+            "issuer": mgr or "Other",
+            "name": name,
+            "share_price": px,                    # WeeklyPayers price
+            "distribution_per_share": dist,       # WeeklyPayers last dividend
+            "notes": f"Source: {WEEKLYPAYERS_HOME}"
+        })
+
+    return dedupe_by_ticker(out)
 
 
-# ============================================================
-# History + metrics
-# ============================================================
+def weeklypayers_parse_calendar_week() -> Dict[str, Dict]:
+    """
+    Parse WeeklyPayers calendar page.
+    Your screenshot shows:
+      - Pink tags = Ex/Record
+      - Green tags = Payment
+    We’ll capture dates per ticker:
+      ex_record_dates: [YYYY-MM-DD...]
+      payment_dates:   [YYYY-MM-DD...]
+    Then, for each ticker, pick the nearest upcoming date for ex_dividend_date and pay_date.
+    """
+    soup = fetch_soup(WEEKLYPAYERS_CAL)
+
+    # Attempt to detect the "week currently shown" dates by reading the day headers:
+    # e.g., "Tuesday Jan 20" ... This is a best-effort.
+    # We'll scan each day column for a header containing a month/day.
+    day_blocks = []
+
+    # Common structures: tables, div grids. We'll just find elements that look like day columns.
+    # Heuristic: a container that contains many tickers and has a date-ish header.
+    date_header_regex = re.compile(r"\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b", re.IGNORECASE)
+
+    candidates = soup.find_all(["td", "div"], limit=5000)
+    for el in candidates:
+        txt = norm_space(el.get_text(" ", strip=True))
+        # day blocks tend to be "dense"
+        if len(txt) < 30:
+            continue
+        if date_header_regex.search(txt) and re.search(r"\b[A-Z]{3,6}\b", txt):
+            # likely a day cell
+            day_blocks.append(el)
+
+    # If heuristic fails, fallback to scanning the whole page for date blocks via table cells
+    if not day_blocks:
+        day_blocks = soup.find_all("td")
+
+    # We need a way to associate tickers with the specific day date.
+    # We’ll find a date string inside each block, parse it, then find ticker tags inside.
+    ticker_map = defaultdict(lambda: {"ex_record_dates": [], "payment_dates": [], "source_url": WEEKLYPAYERS_CAL})
+
+    # Build a "current year" guess.
+    current_year = datetime.now().year
+
+    def parse_month_day_to_iso(month_day: str) -> Optional[str]:
+        # month_day could be "Jan 23" or "January 23" etc.
+        md = month_day.strip()
+        # If calendar is January and you're in late year, this can be off; but good enough.
+        for fmt in ("%b %d", "%B %d"):
+            try:
+                d = datetime.strptime(md, fmt).date().replace(year=current_year)
+                return d.isoformat()
+            except Exception:
+                pass
+        return None
+
+    # Classes may not be stable; so we also use the legend words if present.
+    # Best effort: if element has style/background or class names containing "payment" or "ex"
+    for block in day_blocks:
+        block_text = norm_space(block.get_text(" ", strip=True))
+
+        # Find a date token like "Jan 23" or "January 23"
+        m = re.search(r"\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}\b",
+                      block_text, flags=re.IGNORECASE)
+        day_iso = parse_month_day_to_iso(m.group(0)) if m else None
+
+        # Find tickers in this block
+        tickers = re.findall(r"\b[A-Z]{3,6}\b", block_text)
+        if not tickers:
+            continue
+
+        # If we cannot parse a date for this block, skip adding dates (still okay)
+        if not day_iso:
+            continue
+
+        # Now attempt to classify each ticker as ex/record vs payment using HTML hints:
+        # - if the ticker appears inside an element whose class contains "payment" => payment
+        # - if class contains "ex" or "record" => ex/record
+        # Otherwise, add to both lists as a safe fallback.
+        # This prevents “all dates missing” even if classes change.
+        per_ticker_class = defaultdict(set)
+
+        # Search descendants for short nodes (likely ticker tags)
+        for node in block.find_all(["span", "div", "a", "p"]):
+            ttxt = norm_space(node.get_text(" ", strip=True))
+            if not re.fullmatch(r"[A-Z]{3,6}", ttxt):
+                continue
+            cls = " ".join(node.get("class") or []).lower()
+            style = (node.get("style") or "").lower()
+            hint = cls + " " + style
+            per_ticker_class[ttxt].add(hint)
+
+        for t in set(tickers):
+            hints = " ".join(per_ticker_class.get(t, []))
+            if "pay" in hints or "payment" in hints or "green" in hints:
+                ticker_map[t]["payment_dates"].append(day_iso)
+            elif "ex" in hints or "record" in hints or "pink" in hints:
+                ticker_map[t]["ex_record_dates"].append(day_iso)
+            else:
+                # unknown tag type; add to both as conservative fallback
+                ticker_map[t]["ex_record_dates"].append(day_iso)
+                ticker_map[t]["payment_dates"].append(day_iso)
+
+    # Deduplicate + sort
+    for t, v in ticker_map.items():
+        v["ex_record_dates"] = sorted(set(v["ex_record_dates"]))
+        v["payment_dates"] = sorted(set(v["payment_dates"]))
+
+    return dict(ticker_map)
+
+
+# =========================
+# History + metrics (unchanged)
+# =========================
 def write_history_snapshot(payload):
     hist_dir = Path("data/history")
     hist_dir.mkdir(parents=True, exist_ok=True)
     day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     path = hist_dir / f"{day}.json"
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return path
-
 
 def load_history(days=45):
     hist_dir = Path("data/history")
@@ -380,7 +376,6 @@ def load_history(days=45):
         except Exception:
             pass
     return out
-
 
 def stability_score_from_dist(dists):
     dists = [float(x) for x in dists if x is not None]
@@ -401,22 +396,19 @@ def stability_score_from_dist(dists):
     score -= 80 * cv
     return round(clamp(score, 0, 100), 1)
 
-
 def trend_slope(values):
     vals = [float(v) for v in values if v is not None]
     if len(vals) < 4:
         return None
     return (vals[-1] - vals[0]) / (len(vals) - 1)
 
-
 def compute_ex_div_comparisons(current_items):
     history = load_history(45)
     timeline = defaultdict(list)
-
     for snap in history:
-        snap_date = (snap.get("generated_at", "")[:10] or "")
+        snap_date = (snap.get("generated_at","")[:10] or "")
         for it in snap.get("items", []):
-            if str(it.get("frequency", "")).lower() != "weekly":
+            if str(it.get("frequency","")).lower() != "weekly":
                 continue
             ticker = it.get("ticker")
             if not ticker:
@@ -424,12 +416,12 @@ def compute_ex_div_comparisons(current_items):
             timeline[ticker].append({
                 "run_date": snap_date,
                 "ex_div": it.get("ex_dividend_date"),
-                "price": it.get("price"),
+                "price": it.get("share_price") or it.get("price_proxy"),
                 "dist": it.get("distribution_per_share"),
                 "nav": it.get("nav_official"),
             })
 
-    today = datetime.now(timezone.utc).date()
+    today = date.today()
 
     for it in current_items:
         t = it.get("ticker")
@@ -487,7 +479,6 @@ def compute_ex_div_comparisons(current_items):
         sl = trend_slope(last_dists)
         it["dist_slope_8w"] = round(sl, 6) if sl is not None else None
 
-
 def generate_alerts(items):
     alerts = []
     for it in items:
@@ -509,79 +500,69 @@ def generate_alerts(items):
                 "ex_dividend_date": it.get("ex_dividend_date"),
                 "message": f"{it['ticker']} distribution down {m:.2f}% vs prior ex-div month"
             })
-    seen = set()
-    out = []
-    for a in alerts:
-        key = (a.get("ticker"), a.get("type"), a.get("ex_dividend_date"))
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(a)
-    return out
+    return alerts
 
 
-# ============================================================
-# Build items (main pipeline) — WeeklyPayers-only
-# ============================================================
-def _load_prev_snapshot() -> Optional[Dict]:
-    prev = read_json_if_exists(Path(OUTFILE_BACKUP), None)
-    if isinstance(prev, dict) and isinstance(prev.get("items"), list):
-        return prev
-    if isinstance(prev, list):
-        return {"items": prev}
-    return None
-
-
+# =========================
+# Build items (WeeklyPayers-only)
+# =========================
 def build_items() -> List[Dict]:
-    prev_payload = _load_prev_snapshot()
+    # 1) Universe + price + last dividend all from WeeklyPayers homepage table
+    base_items = weeklypayers_parse_weekly_table()
+    print(f"[weeklypayers] parsed homepage rows={len(base_items)}")
 
-    discovered = weeklypayers_discover_universe()
-    discovered = dedupe(discovered)
-    print(f"[weeklypayers] discovered universe: {len(discovered)} tickers")
-
-    cal_map = weeklypayers_calendar_latest()
-    print(f"[weeklypayers] calendar rows mapped: {len(cal_map)} tickers")
+    # 2) Dates from WeeklyPayers calendar
+    cal_map = weeklypayers_parse_calendar_week()
+    print(f"[weeklypayers] parsed calendar tickers={len(cal_map)}")
 
     items: List[Dict] = []
-    for d in discovered:
-        ticker = d["ticker"]
-        info = cal_map.get(ticker, {})
+    for b in base_items:
+        t = b["ticker"]
+        issuer = b.get("issuer") or "Other"
+        px = b.get("share_price")
+        dist = b.get("distribution_per_share")
 
-        # No external price source (per request)
-        price = None
-        price_source = None
+        # choose dates (best effort):
+        cal = cal_map.get(t, {})
+        ex_dates = cal.get("ex_record_dates") or []
+        pay_dates = cal.get("payment_dates") or []
+
+        # pick "next" date (>= today) if possible, else last known
+        today_iso = date.today().isoformat()
+
+        def pick_next(dates: List[str]) -> Optional[str]:
+            if not dates:
+                return None
+            future = [d for d in dates if d >= today_iso]
+            return future[0] if future else dates[-1]
+
+        ex_dividend_date = pick_next(ex_dates)
+        pay_date = pick_next(pay_dates)
 
         row = {
-            "ticker": ticker,
-            "name": d.get("name"),
-            "issuer": d.get("issuer") or "WeeklyPayers",
-            "reference_asset": d.get("reference_asset"),
+            "ticker": t,
+            "name": b.get("name"),
+            "issuer": issuer,
+            "reference_asset": None,
             "frequency": "Weekly",
 
-            # WeeklyPayers calendar (primary)
-            "distribution_per_share": info.get("distribution_per_share"),
-            "declaration_date": info.get("declaration_date"),
-            "ex_dividend_date": info.get("ex_dividend_date"),
-            "record_date": info.get("record_date"),
-            "pay_date": info.get("pay_date"),
+            "distribution_per_share": dist,
+            "declaration_date": None,
+            "ex_dividend_date": ex_dividend_date,
+            "record_date": ex_dividend_date,  # WeeklyPayers labels "Ex/Record" together
+            "pay_date": pay_date,
 
-            # Sources
-            "source_urls": sorted(set((d.get("source_urls") or []) + ([info.get("source_url")] if info.get("source_url") else []))),
+            # Prices: WeeklyPayers only
+            "share_price": px,
+            "price_proxy": px,  # keep filled so UI math always has something
 
-            # Price fields kept for UI compatibility (null)
-            "share_price": None,
-            "price_proxy": None,
-            "price": price,
-            "price_source": price_source,
-
-            # Derived: ONLY compute if price is present
+            # Derived columns
             "div_pct_per_share": None,
             "payout_per_1000": None,
-            # Annualized yield must be: dist * 52 / price * 100  (as requested)
-            "annualized_yield_pct": None,
+            "annualized_yield_pct": None,     # dist*52/price * 100
             "monthly_income_per_1000": None,
 
-            # Comparisons
+            # Comparison columns
             "nav_official": None,
             "price_chg_ex_1w_pct": None,
             "price_chg_ex_1m_pct": None,
@@ -594,35 +575,42 @@ def build_items() -> List[Dict]:
             "dist_slope_8w": None,
             "dist_stability_score": None,
 
-            "notes": d.get("notes") or "",
+            "notes": b.get("notes") or ""
         }
 
-        px = row["price"]
-        dist = row["distribution_per_share"]
+        # derived calculations (requested formula dist*52/price)
         if px is not None and dist is not None and px > 0:
             row["div_pct_per_share"] = (dist / px) * 100.0
             row["payout_per_1000"] = (1000.0 / px) * dist
-            row["annualized_yield_pct"] = (dist * 52.0 / px) * 100.0  # <<< dist*52/price
+            row["annualized_yield_pct"] = (dist * 52.0 / px) * 100.0
             row["monthly_income_per_1000"] = (row["payout_per_1000"] * 52.0) / 12.0
+
+        # add calendar source note
+        if cal and cal.get("source_url"):
+            row["notes"] = (row["notes"] + (" | " if row["notes"] else "") + f"Calendar: {cal['source_url']}")
 
         items.append(row)
 
-    items_weekly = [x for x in items if str(x.get("frequency", "")).lower() == "weekly"]
+    items = dedupe_by_ticker(items)
 
-    # Safety net
-    if len(items_weekly) < MIN_EXPECTED_ITEMS:
-        if prev_payload and isinstance(prev_payload.get("items"), list) and len(prev_payload["items"]) >= MIN_EXPECTED_ITEMS:
-            items_weekly = prev_payload["items"]
-            print(f"[fallback] restored previous snapshot from {OUTFILE_BACKUP}, count={len(items_weekly)}")
+    # Safety net: if scrape fails badly, restore prior snapshot instead of wiping
+    if len(items) < MIN_EXPECTED_ITEMS:
+        prev = read_json_if_exists(Path(OUTFILE_BACKUP), None)
+        if isinstance(prev, dict) and isinstance(prev.get("items"), list) and len(prev["items"]) >= MIN_EXPECTED_ITEMS:
+            items = prev["items"]
+            print(f"[fallback] restored previous snapshot from {OUTFILE_BACKUP}, count={len(items)}")
+        elif isinstance(prev, list) and len(prev) >= MIN_EXPECTED_ITEMS:
+            items = prev
+            print(f"[fallback] restored previous snapshot(list) from {OUTFILE_BACKUP}, count={len(items)}")
         else:
             print("[fallback] no valid previous snapshot found; keeping small result")
 
-    return items_weekly
+    return items
 
 
-# ============================================================
+# =========================
 # Main
-# ============================================================
+# =========================
 def main():
     items = build_items()
     payload = {
@@ -630,32 +618,27 @@ def main():
         "items": items
     }
 
-    # Write history first
+    # Write history first (so comparisons can look back)
     write_history_snapshot(payload)
 
-    # Comparisons
+    # Compute comparisons using history (including today's snapshot)
     compute_ex_div_comparisons(items)
     payload["items"] = items
 
     Path("data").mkdir(exist_ok=True)
 
-    with open(OUTFILE_PRIMARY, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
-
-    with open(OUTFILE_BACKUP, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    Path(OUTFILE_PRIMARY).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    Path(OUTFILE_BACKUP).write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     alerts = generate_alerts(items)
-    with open(ALERTS_FILE, "w", encoding="utf-8") as f:
-        json.dump({
-            "generated_at": payload["generated_at"],
-            "threshold_drop_pct": ALERT_DROP_PCT,
-            "alerts": alerts
-        }, f, indent=2)
+    Path(ALERTS_FILE).write_text(json.dumps({
+        "generated_at": payload["generated_at"],
+        "threshold_drop_pct": ALERT_DROP_PCT,
+        "alerts": alerts
+    }, indent=2), encoding="utf-8")
 
     print(f"Wrote {OUTFILE_PRIMARY} and {OUTFILE_BACKUP} with {len(items)} items; alerts={len(alerts)}")
-    print("NOTE: Prices disabled (USE_YAHOO_PRICES=False). Yield fields requiring price will be null unless you add a WeeklyPayers-based price source.")
-
+    print("NOTE: Prices are WeeklyPayers-only (USE_YAHOO_PRICES=False). Annualized yield = dist*52/price.")
 
 if __name__ == "__main__":
     main()
