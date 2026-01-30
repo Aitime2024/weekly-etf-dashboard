@@ -2,28 +2,36 @@ import json
 import re
 import time
 import statistics
+from dataclasses import dataclass
 from datetime import datetime, timezone, date
 from pathlib import Path
 from collections import defaultdict
-from typing import List, Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import requests
 from bs4 import BeautifulSoup
 
-# =========================
-# Config
-# =========================
-OUTFILE_PRIMARY = "data/weekly_etfs.json"   # UI reads this
-OUTFILE_BACKUP  = "data/items.json"        # fallback + history comparisons
+# ============================================================
+# Outputs (UI expects these)
+# ============================================================
+OUTFILE_PRIMARY = "data/weekly_etfs.json"
+OUTFILE_BACKUP  = "data/items.json"
 ALERTS_FILE     = "data/alerts.json"
 
-ALERT_DROP_PCT  = -15.0
+# Alert rule: distribution drop vs prior ex-div week/month
+ALERT_DROP_PCT = -15.0
+
+# Safety net: if parsing fails, do not wipe dataset
 MIN_EXPECTED_ITEMS = 25
 
-USE_YAHOO_PRICES = False  # requested: keep disabled
+# ============================================================
+# Primary source: WeeklyPayers
+# ============================================================
+WEEKLYPAYERS_TABLE_URL = "https://weeklypayers.com/"
+WEEKLYPAYERS_CAL_URL   = "https://weeklypayers.com/calendar/"
 
-WEEKLYPAYERS_HOME = "https://weeklypayers.com/"
-WEEKLYPAYERS_CAL  = "https://weeklypayers.com/calendar/"
+# If you ever need to limit how far we scan calendar for future dates:
+CALENDAR_PAGES_TO_SCAN = 4  # tries "next" paging a few times if present
 
 UA = {
     "User-Agent": "weekly-etf-dashboard/3.0 (+github-actions)",
@@ -35,10 +43,15 @@ _FETCH_CACHE: Dict[str, str] = {}
 _LAST_FETCH_AT = 0.0
 _MIN_FETCH_INTERVAL_SEC = 0.35
 
+MANUAL_TICKERS_FILE = Path("data/manual_tickers.json")
 
-# =========================
-# Helpers
-# =========================
+
+# ============================================================
+# Small helpers
+# ============================================================
+def norm_space(s: str) -> str:
+    return re.sub(r"\s+", " ", (s or "")).strip()
+
 def clamp(x: float, lo: float, hi: float) -> float:
     return max(lo, min(hi, x))
 
@@ -54,16 +67,14 @@ def pct_change(a, b) -> Optional[float]:
     except Exception:
         return None
 
-def norm_space(s: str) -> str:
-    return re.sub(r"\s+", " ", (s or "")).strip()
-
 def _parse_float(s: str) -> Optional[float]:
     if s is None:
         return None
     t = str(s).strip()
     if not t:
         return None
-    t = t.replace("$", "").replace(",", "")
+    # remove $, commas, percent signs etc
+    t = t.replace("$", "").replace(",", "").replace("%", "")
     t = re.sub(r"[^0-9.\-]", "", t)
     if not t:
         return None
@@ -78,15 +89,19 @@ def _parse_date_to_iso(s: str) -> Optional[str]:
     t = str(s).strip()
     if not t:
         return None
+
     t = t.replace("Sept.", "Sep.").replace("Sept ", "Sep ")
+
     for fmt in ("%B %d, %Y", "%b %d, %Y", "%m/%d/%Y", "%Y-%m-%d"):
         try:
             return datetime.strptime(t, fmt).date().isoformat()
         except Exception:
             pass
+
     m = re.search(r"([A-Za-z]{3,9}\s+\d{1,2},\s+\d{4})", t)
     if m:
         return _parse_date_to_iso(m.group(1))
+
     return None
 
 def read_json_if_exists(path: Path, default):
@@ -113,6 +128,7 @@ def fetch_text(url: str) -> str:
 
     r = requests.get(url, timeout=30, headers=UA)
     r.raise_for_status()
+
     text = r.text
     _FETCH_CACHE[url] = text
     _LAST_FETCH_AT = time.time()
@@ -121,67 +137,91 @@ def fetch_text(url: str) -> str:
 def fetch_soup(url: str) -> BeautifulSoup:
     return BeautifulSoup(fetch_text(url), "lxml")
 
-def dedupe_by_ticker(items: List[Dict]) -> List[Dict]:
+def dedupe(items: List[Dict]) -> List[Dict]:
     seen = set()
     out = []
     for it in items:
-        t = (it.get("ticker") or "").upper().strip()
-        if not t or t in seen:
+        key = (it.get("ticker"), it.get("issuer"))
+        if key in seen:
             continue
-        seen.add(t)
+        seen.add(key)
         out.append(it)
     return out
 
-
-# =========================
-# WeeklyPayers parsing
-# =========================
-def weeklypayers_parse_weekly_table() -> List[Dict]:
+def load_manual_tickers() -> List[Dict]:
     """
-    Parse WeeklyPayers weekly dividend ETFs table from homepage.
-    Expected columns (as shown in your screenshot):
-      Ticker | Fund Manager | Current Price | Last Dividend | Ann. Yield % | ...
-    We only need: ticker, manager, current_price, last_dividend (dist), and optionally name.
+    Optional: data/manual_tickers.json supports entries like:
+    [
+      {"ticker":"XXXX","issuer":"SomeIssuer","name":"...", "reference_asset":"..."}
+    ]
     """
-    soup = fetch_soup(WEEKLYPAYERS_HOME)
+    data = read_json_if_exists(MANUAL_TICKERS_FILE, [])
+    if not isinstance(data, list):
+        return []
+    out = []
+    for m in data:
+        if not isinstance(m, dict):
+            continue
+        t = str(m.get("ticker", "")).strip().upper()
+        if not t:
+            continue
+        out.append({
+            "ticker": t,
+            "issuer": m.get("issuer") or "Other",
+            "frequency": "Weekly",
+            "name": m.get("name"),
+            "reference_asset": m.get("reference_asset"),
+            "notes": "Manually added"
+        })
+    return out
 
-    # Find a table that looks like the "Weekly Dividend ETFs" table
-    target = None
+
+# ============================================================
+# WeeklyPayers table parsing
+# ============================================================
+def _find_best_table(soup: BeautifulSoup) -> Optional[BeautifulSoup]:
+    """
+    WeeklyPayers uses a big sortable table. We'll find the table whose headers
+    contain 'Ticker' and 'Last Dividend' and 'Current Price' (or similar).
+    """
     for tbl in soup.find_all("table"):
         headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
-        blob = " ".join(headers)
-        if ("ticker" in blob and "fund manager" in blob and "current price" in blob and "last dividend" in blob):
-            target = tbl
-            break
+        blob = " | ".join(headers)
+        if "ticker" in blob and ("last dividend" in blob or "dividend" in blob) and ("current price" in blob or "price" in blob):
+            return tbl
+    return None
 
-    if not target:
-        # Fallback: take the first table with "Ticker" and "Last Dividend"
-        for tbl in soup.find_all("table"):
-            headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
-            blob = " ".join(headers)
-            if ("ticker" in blob and "last dividend" in blob):
-                target = tbl
-                break
-
-    if not target:
+def weeklypayers_discover_from_table() -> List[Dict]:
+    soup = fetch_soup(WEEKLYPAYERS_TABLE_URL)
+    table = _find_best_table(soup)
+    if not table:
         return []
 
-    headers = [norm_space(th.get_text(" ", strip=True)).lower() for th in target.find_all("th")]
+    headers = [norm_space(th.get_text(" ", strip=True)) for th in table.find_all("th")]
+    headers_l = [h.lower() for h in headers]
 
-    def idx_of(needle: str) -> Optional[int]:
-        for i, h in enumerate(headers):
-            if needle in h:
+    def idx(*needles) -> Optional[int]:
+        for i, h in enumerate(headers_l):
+            ok = True
+            for n in needles:
+                if n not in h:
+                    ok = False
+                    break
+            if ok:
                 return i
         return None
 
-    i_ticker  = idx_of("ticker")
-    i_mgr     = idx_of("fund manager") or idx_of("manager")
-    i_price   = idx_of("current price") or idx_of("price")
-    i_lastdiv = idx_of("last dividend") or idx_of("dividend")
-    i_name    = idx_of("fund") or idx_of("name")  # may not exist
+    i_ticker = idx("ticker")
+    i_mgr    = idx("fund manager") or idx("manager") or idx("issuer")
+    i_price  = idx("current", "price") or idx("price")
+    i_last   = idx("last", "dividend") or idx("last dividend") or idx("dividend")
+    # Some table has "Dividend per $" column (optional)
+    i_div_per_dollar = idx("dividend", "per")  # loose
+    # Some table has "ETF Name" or similar
+    i_name = idx("etf name") or idx("name")
 
-    out = []
-    for tr in target.find_all("tr"):
+    items = []
+    for tr in table.find_all("tr"):
         tds = tr.find_all("td")
         if not tds:
             continue
@@ -191,171 +231,250 @@ def weeklypayers_parse_weekly_table() -> List[Dict]:
                 return None
             return norm_space(tds[i].get_text(" ", strip=True)) or None
 
-        ticker = cell(i_ticker)
-        if not ticker:
+        ticker = (cell(i_ticker) or "").upper()
+        if not ticker or not re.match(r"^[A-Z0-9\.\-]{1,10}$", ticker):
             continue
 
-        # sometimes first "td" is a + expander, shifting columns; try to recover
-        # If ticker doesn't look like a symbol, attempt shift by 1
-        if not re.fullmatch(r"[A-Z]{1,6}", ticker.upper()):
-            if len(tds) >= 2:
-                maybe = norm_space(tds[1].get_text(" ", strip=True))
-                if re.fullmatch(r"[A-Z]{1,6}", maybe.upper()):
-                    # shift all indices by +1
-                    def cell_shifted(i):
-                        if i is None:
-                            return None
-                        return cell(i + 1)
-                    ticker = cell_shifted(i_ticker) or ticker
-                    mgr = cell_shifted(i_mgr)
-                    price = cell_shifted(i_price)
-                    last_div = cell_shifted(i_lastdiv)
-                    name = cell_shifted(i_name)
-                else:
-                    mgr = cell(i_mgr)
-                    price = cell(i_price)
-                    last_div = cell(i_lastdiv)
-                    name = cell(i_name)
-            else:
-                mgr = cell(i_mgr)
-                price = cell(i_price)
-                last_div = cell(i_lastdiv)
-                name = cell(i_name)
-        else:
-            mgr = cell(i_mgr)
-            price = cell(i_price)
-            last_div = cell(i_lastdiv)
-            name = cell(i_name)
+        mgr = cell(i_mgr) or "Other"
 
-        ticker_u = ticker.upper().strip()
-        px = _parse_float(price)
-        dist = _parse_float(last_div)
+        price = _parse_float(cell(i_price))
+        last_div = _parse_float(cell(i_last))
 
-        out.append({
-            "ticker": ticker_u,
-            "issuer": mgr or "Other",
-            "name": name,
-            "share_price": px,                    # WeeklyPayers price
-            "distribution_per_share": dist,       # WeeklyPayers last dividend
-            "notes": f"Source: {WEEKLYPAYERS_HOME}"
+        # Keep as issuer for UI grouping
+        issuer = mgr
+
+        items.append({
+            "ticker": ticker,
+            "issuer": issuer,
+            "frequency": "Weekly",
+            "name": cell(i_name),
+            "reference_asset": None,
+            "wp_current_price": price,
+            "wp_last_dividend": last_div,
+            "wp_dividend_per_dollar": _parse_float(cell(i_div_per_dollar)) if i_div_per_dollar is not None else None,
+            "notes": "Sourced from WeeklyPayers table"
         })
 
-    return dedupe_by_ticker(out)
+    return dedupe(items)
 
 
-def weeklypayers_parse_calendar_week() -> Dict[str, Dict]:
+# ============================================================
+# WeeklyPayers calendar parsing (Ex/Record vs Payment)
+# ============================================================
+@dataclass
+class CalHit:
+    kind: str  # "EX_RECORD" or "PAYMENT"
+    iso_date: str
+
+def _calendar_try_extract_week_header_date(s: str) -> Optional[str]:
     """
-    Parse WeeklyPayers calendar page.
-    Your screenshot shows:
-      - Pink tags = Ex/Record
-      - Green tags = Payment
-    We’ll capture dates per ticker:
-      ex_record_dates: [YYYY-MM-DD...]
-      payment_dates:   [YYYY-MM-DD...]
-    Then, for each ticker, pick the nearest upcoming date for ex_dividend_date and pay_date.
+    Header looks like "Week of January 19, 2026" or "Dividend Calendar January 2026".
+    We'll return ISO for the week start if present.
     """
-    soup = fetch_soup(WEEKLYPAYERS_CAL)
+    m = re.search(r"Week of\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})", s)
+    if m:
+        return _parse_date_to_iso(m.group(1))
+    return None
 
-    # Attempt to detect the "week currently shown" dates by reading the day headers:
-    # e.g., "Tuesday Jan 20" ... This is a best-effort.
-    # We'll scan each day column for a header containing a month/day.
-    day_blocks = []
-
-    # Common structures: tables, div grids. We'll just find elements that look like day columns.
-    # Heuristic: a container that contains many tickers and has a date-ish header.
-    date_header_regex = re.compile(r"\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b", re.IGNORECASE)
-
-    candidates = soup.find_all(["td", "div"], limit=5000)
-    for el in candidates:
-        txt = norm_space(el.get_text(" ", strip=True))
-        # day blocks tend to be "dense"
-        if len(txt) < 30:
-            continue
-        if date_header_regex.search(txt) and re.search(r"\b[A-Z]{3,6}\b", txt):
-            # likely a day cell
-            day_blocks.append(el)
-
-    # If heuristic fails, fallback to scanning the whole page for date blocks via table cells
-    if not day_blocks:
-        day_blocks = soup.find_all("td")
-
-    # We need a way to associate tickers with the specific day date.
-    # We’ll find a date string inside each block, parse it, then find ticker tags inside.
-    ticker_map = defaultdict(lambda: {"ex_record_dates": [], "payment_dates": [], "source_url": WEEKLYPAYERS_CAL})
-
-    # Build a "current year" guess.
-    current_year = datetime.now().year
-
-    def parse_month_day_to_iso(month_day: str) -> Optional[str]:
-        # month_day could be "Jan 23" or "January 23" etc.
-        md = month_day.strip()
-        # If calendar is January and you're in late year, this can be off; but good enough.
-        for fmt in ("%b %d", "%B %d"):
-            try:
-                d = datetime.strptime(md, fmt).date().replace(year=current_year)
-                return d.isoformat()
-            except Exception:
-                pass
+def _calendar_parse_day_labels(day_header_text: str, fallback_year: Optional[int] = None) -> Optional[date]:
+    """
+    Day labels often like:
+      "Tuesday Jan 20"
+    but year isn't present. We'll infer year from page header if possible.
+    """
+    t = norm_space(day_header_text)
+    m = re.search(r"\b([A-Za-z]{3})\s+(\d{1,2})\b", t)
+    if not m:
+        return None
+    mon_abbr = m.group(1)
+    dd = int(m.group(2))
+    try:
+        # Use 2000 then replace year later
+        dt = datetime.strptime(f"{mon_abbr} {dd} 2000", "%b %d %Y").date()
+        if fallback_year:
+            return date(fallback_year, dt.month, dt.day)
+        return dt
+    except Exception:
         return None
 
-    # Classes may not be stable; so we also use the legend words if present.
-    # Best effort: if element has style/background or class names containing "payment" or "ex"
-    for block in day_blocks:
-        block_text = norm_space(block.get_text(" ", strip=True))
+def weeklypayers_calendar_map(tickers: List[str]) -> Dict[str, Dict]:
+    """
+    Returns map:
+      ticker -> { ex_dividend_date, record_date, pay_date }
+    WeeklyPayers calendar shows:
+      - pink/red chips: Ex/Record
+      - green chips: Payment
+    We'll set:
+      ex_dividend_date = earliest upcoming EX/RECORD
+      record_date = same as ex_dividend_date (site groups them)
+      pay_date = earliest upcoming PAYMENT
+    """
+    if not tickers:
+        return {}
 
-        # Find a date token like "Jan 23" or "January 23"
-        m = re.search(r"\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}\b",
-                      block_text, flags=re.IGNORECASE)
-        day_iso = parse_month_day_to_iso(m.group(0)) if m else None
+    want = set(tickers)
+    out_hits: Dict[str, List[CalHit]] = defaultdict(list)
 
-        # Find tickers in this block
-        tickers = re.findall(r"\b[A-Z]{3,6}\b", block_text)
-        if not tickers:
-            continue
+    # We'll scan the calendar page and click "next" pages if a link exists in HTML.
+    # If there's no link, we still parse the first page.
+    next_url = WEEKLYPAYERS_CAL_URL
+    scanned = 0
 
-        # If we cannot parse a date for this block, skip adding dates (still okay)
-        if not day_iso:
-            continue
+    today = date.today()
 
-        # Now attempt to classify each ticker as ex/record vs payment using HTML hints:
-        # - if the ticker appears inside an element whose class contains "payment" => payment
-        # - if class contains "ex" or "record" => ex/record
-        # Otherwise, add to both lists as a safe fallback.
-        # This prevents “all dates missing” even if classes change.
-        per_ticker_class = defaultdict(set)
+    while next_url and scanned < CALENDAR_PAGES_TO_SCAN:
+        scanned += 1
+        soup = fetch_soup(next_url)
 
-        # Search descendants for short nodes (likely ticker tags)
-        for node in block.find_all(["span", "div", "a", "p"]):
-            ttxt = norm_space(node.get_text(" ", strip=True))
-            if not re.fullmatch(r"[A-Z]{3,6}", ttxt):
-                continue
-            cls = " ".join(node.get("class") or []).lower()
-            style = (node.get("style") or "").lower()
-            hint = cls + " " + style
-            per_ticker_class[ttxt].add(hint)
+        page_text = soup.get_text("\n", strip=True)
+        # Infer year from any "2026" shown in header area
+        year = None
+        m_year = re.search(r"\b(20\d{2})\b", page_text)
+        if m_year:
+            try:
+                year = int(m_year.group(1))
+            except Exception:
+                year = None
 
-        for t in set(tickers):
-            hints = " ".join(per_ticker_class.get(t, []))
-            if "pay" in hints or "payment" in hints or "green" in hints:
-                ticker_map[t]["payment_dates"].append(day_iso)
-            elif "ex" in hints or "record" in hints or "pink" in hints:
-                ticker_map[t]["ex_record_dates"].append(day_iso)
+        # Find the calendar grid tables (there may be one main grid)
+        # We'll look for tables that have weekday column headers.
+        cal_tables = []
+        for tbl in soup.find_all("table"):
+            ths = [norm_space(th.get_text(" ", strip=True)).lower() for th in tbl.find_all("th")]
+            if any("monday" in h for h in ths) and any("friday" in h for h in ths):
+                cal_tables.append(tbl)
+
+        # If not found, also accept div blocks-based layout
+        if not cal_tables:
+            cal_tables = [None]
+
+        def classify_chip(tag) -> Optional[str]:
+            """
+            Determine if a ticker chip is EX/RECORD or PAYMENT by CSS class or style.
+            We keep it robust: look at class names + legend words nearby.
+            """
+            cls = " ".join(tag.get("class", [])).lower()
+            if "payment" in cls or "pay" in cls or "green" in cls:
+                return "PAYMENT"
+            if "ex" in cls or "record" in cls or "pink" in cls or "red" in cls:
+                return "EX_RECORD"
+
+            # fallback by inline style background color
+            style = (tag.get("style") or "").lower()
+            if "green" in style:
+                return "PAYMENT"
+            if "pink" in style or "red" in style:
+                return "EX_RECORD"
+
+            # fallback by data-legend attributes
+            data_kind = (tag.get("data-type") or tag.get("data-kind") or "").lower()
+            if "pay" in data_kind:
+                return "PAYMENT"
+            if "ex" in data_kind or "record" in data_kind:
+                return "EX_RECORD"
+
+            return None
+
+        # Parse table-based layout
+        if cal_tables and cal_tables[0] is not None:
+            for tbl in cal_tables:
+                # Column headers have day labels like "Tuesday Jan 20"
+                headers = tbl.find_all("th")
+                day_dates: List[Optional[date]] = []
+                for th in headers:
+                    d = _calendar_parse_day_labels(th.get_text(" ", strip=True), fallback_year=year)
+                    day_dates.append(d)
+
+                # Row cells contain ticker chips
+                rows = tbl.find_all("tr")
+                # Skip header row
+                for tr in rows[1:]:
+                    tds = tr.find_all("td")
+                    for col_i, td in enumerate(tds):
+                        d = day_dates[col_i] if col_i < len(day_dates) else None
+                        if not d or d < today:
+                            continue
+                        iso = d.isoformat()
+
+                        # Chips may be spans/divs/links
+                        for chip in td.find_all(["span", "a", "div"]):
+                            txt = norm_space(chip.get_text(" ", strip=True)).upper()
+                            if not txt or txt not in want:
+                                continue
+                            kind = classify_chip(chip)
+                            if not kind:
+                                # If the cell is colored, infer from parent class
+                                parent_cls = " ".join((td.get("class", []) + tr.get("class", []) + tbl.get("class", []))).lower()
+                                if "payment" in parent_cls or "green" in parent_cls:
+                                    kind = "PAYMENT"
+                                elif "ex" in parent_cls or "record" in parent_cls or "pink" in parent_cls or "red" in parent_cls:
+                                    kind = "EX_RECORD"
+                            if kind:
+                                out_hits[txt].append(CalHit(kind=kind, iso_date=iso))
+
+        # Parse div-based layout fallback
+        else:
+            # Look for weekday blocks by headings + ticker chips
+            # We'll scan for patterns like "Tuesday Jan 20" then subsequent chips nearby.
+            blocks = soup.find_all(["div", "section"])
+            for b in blocks:
+                title = b.get_text(" ", strip=True)
+                if not title:
+                    continue
+                d = _calendar_parse_day_labels(title, fallback_year=year)
+                if not d or d < today:
+                    continue
+                iso = d.isoformat()
+                for chip in b.find_all(["span", "a", "div"]):
+                    txt = norm_space(chip.get_text(" ", strip=True)).upper()
+                    if txt not in want:
+                        continue
+                    kind = classify_chip(chip)
+                    if kind:
+                        out_hits[txt].append(CalHit(kind=kind, iso_date=iso))
+
+        # Find "next" link (if calendar has a paging control)
+        next_link = None
+        for a in soup.find_all("a"):
+            label = norm_space(a.get_text(" ", strip=True)).lower()
+            href = a.get("href") or ""
+            if "next" == label or "›" == label or ">" == label:
+                if href and "calendar" in href:
+                    next_link = href
+                    break
+
+        if next_link:
+            if next_link.startswith("http"):
+                next_url = next_link
             else:
-                # unknown tag type; add to both as conservative fallback
-                ticker_map[t]["ex_record_dates"].append(day_iso)
-                ticker_map[t]["payment_dates"].append(day_iso)
+                next_url = "https://weeklypayers.com" + next_link
+        else:
+            next_url = None
 
-    # Deduplicate + sort
-    for t, v in ticker_map.items():
-        v["ex_record_dates"] = sorted(set(v["ex_record_dates"]))
-        v["payment_dates"] = sorted(set(v["payment_dates"]))
+    # Consolidate hits -> map
+    result: Dict[str, Dict] = {}
+    for t in tickers:
+        hits = out_hits.get(t, [])
+        if not hits:
+            continue
 
-    return dict(ticker_map)
+        ex_dates = sorted({h.iso_date for h in hits if h.kind == "EX_RECORD"})
+        pay_dates = sorted({h.iso_date for h in hits if h.kind == "PAYMENT"})
+
+        result[t] = {
+            "source_url": WEEKLYPAYERS_CAL_URL,
+            "ex_dividend_date": ex_dates[0] if ex_dates else None,
+            "record_date": ex_dates[0] if ex_dates else None,
+            "pay_date": pay_dates[0] if pay_dates else None,
+            "declaration_date": None,
+        }
+
+    return result
 
 
-# =========================
-# History + metrics (unchanged)
-# =========================
+# ============================================================
+# History + metrics (kept from your prior approach)
+# ============================================================
 def write_history_snapshot(payload):
     hist_dir = Path("data/history")
     hist_dir.mkdir(parents=True, exist_ok=True)
@@ -406,9 +525,9 @@ def compute_ex_div_comparisons(current_items):
     history = load_history(45)
     timeline = defaultdict(list)
     for snap in history:
-        snap_date = (snap.get("generated_at","")[:10] or "")
+        snap_date = (snap.get("generated_at", "")[:10] or "")
         for it in snap.get("items", []):
-            if str(it.get("frequency","")).lower() != "weekly":
+            if str(it.get("frequency", "")).lower() != "weekly":
                 continue
             ticker = it.get("ticker")
             if not ticker:
@@ -416,7 +535,7 @@ def compute_ex_div_comparisons(current_items):
             timeline[ticker].append({
                 "run_date": snap_date,
                 "ex_div": it.get("ex_dividend_date"),
-                "price": it.get("share_price") or it.get("price_proxy"),
+                "price": it.get("price_proxy"),
                 "dist": it.get("distribution_per_share"),
                 "nav": it.get("nav_official"),
             })
@@ -428,6 +547,7 @@ def compute_ex_div_comparisons(current_items):
         rows = timeline.get(t, [])
         if not rows:
             continue
+
         rows.sort(key=lambda x: x["run_date"])
         rows = [r for r in rows if r.get("ex_div")]
         if len(rows) < 2:
@@ -503,66 +623,61 @@ def generate_alerts(items):
     return alerts
 
 
-# =========================
+# ============================================================
 # Build items (WeeklyPayers-only)
-# =========================
+# ============================================================
 def build_items() -> List[Dict]:
-    # 1) Universe + price + last dividend all from WeeklyPayers homepage table
-    base_items = weeklypayers_parse_weekly_table()
-    print(f"[weeklypayers] parsed homepage rows={len(base_items)}")
+    # 1) Universe from WeeklyPayers + optional manual list
+    discovered = weeklypayers_discover_from_table()
+    discovered += load_manual_tickers()
+    discovered = dedupe(discovered)
 
-    # 2) Dates from WeeklyPayers calendar
-    cal_map = weeklypayers_parse_calendar_week()
-    print(f"[weeklypayers] parsed calendar tickers={len(cal_map)}")
+    all_tickers = [d["ticker"] for d in discovered if d.get("ticker")]
 
+    print(f"[discovery] WeeklyPayers table tickers={len(discovered)}")
+
+    # 2) Calendar mapping (dates)
+    cal_map = weeklypayers_calendar_map(all_tickers)
+    print(f"[calendar] tickers with any date info={len(cal_map)}")
+
+    # 3) Build rows
     items: List[Dict] = []
-    for b in base_items:
-        t = b["ticker"]
-        issuer = b.get("issuer") or "Other"
-        px = b.get("share_price")
-        dist = b.get("distribution_per_share")
+    for d in discovered:
+        ticker = d["ticker"]
+        issuer = d.get("issuer") or "Other"
 
-        # choose dates (best effort):
-        cal = cal_map.get(t, {})
-        ex_dates = cal.get("ex_record_dates") or []
-        pay_dates = cal.get("payment_dates") or []
+        # WeeklyPayers provides "Current Price" and "Last Dividend"
+        price = d.get("wp_current_price")
+        dist  = d.get("wp_last_dividend")
 
-        # pick "next" date (>= today) if possible, else last known
-        today_iso = date.today().isoformat()
-
-        def pick_next(dates: List[str]) -> Optional[str]:
-            if not dates:
-                return None
-            future = [d for d in dates if d >= today_iso]
-            return future[0] if future else dates[-1]
-
-        ex_dividend_date = pick_next(ex_dates)
-        pay_date = pick_next(pay_dates)
+        # Dates (from calendar)
+        cal = cal_map.get(ticker, {})
 
         row = {
-            "ticker": t,
-            "name": b.get("name"),
+            "ticker": ticker,
+            "name": d.get("name"),
             "issuer": issuer,
-            "reference_asset": None,
+            "reference_asset": d.get("reference_asset"),
             "frequency": "Weekly",
 
+            # Core distribution/dates
             "distribution_per_share": dist,
             "declaration_date": None,
-            "ex_dividend_date": ex_dividend_date,
-            "record_date": ex_dividend_date,  # WeeklyPayers labels "Ex/Record" together
-            "pay_date": pay_date,
+            "ex_dividend_date": cal.get("ex_dividend_date"),
+            "record_date": cal.get("record_date"),
+            "pay_date": cal.get("pay_date"),
 
-            # Prices: WeeklyPayers only
-            "share_price": px,
-            "price_proxy": px,  # keep filled so UI math always has something
+            # Prices (Yahoo disabled; WeeklyPayers is primary)
+            "share_price": None,
+            "price_proxy": price,
 
             # Derived columns
             "div_pct_per_share": None,
             "payout_per_1000": None,
-            "annualized_yield_pct": None,     # dist*52/price * 100
+            "annualized_yield_pct": None,        # dist*52/price
             "monthly_income_per_1000": None,
 
-            # Comparison columns
+            # existing columns used by UI comparisons
             "nav_official": None,
             "price_chg_ex_1w_pct": None,
             "price_chg_ex_1m_pct": None,
@@ -575,42 +690,43 @@ def build_items() -> List[Dict]:
             "dist_slope_8w": None,
             "dist_stability_score": None,
 
-            "notes": b.get("notes") or ""
+            "notes": d.get("notes") or ""
         }
 
-        # derived calculations (requested formula dist*52/price)
-        if px is not None and dist is not None and px > 0:
-            row["div_pct_per_share"] = (dist / px) * 100.0
-            row["payout_per_1000"] = (1000.0 / px) * dist
-            row["annualized_yield_pct"] = (dist * 52.0 / px) * 100.0
-            row["monthly_income_per_1000"] = (row["payout_per_1000"] * 52.0) / 12.0
+        # Notes: include sources
+        row["notes"] = (row["notes"] + (" | " if row["notes"] else "") + WEEKLYPAYERS_TABLE_URL)
+        if cal.get("source_url"):
+            row["notes"] += " | " + str(cal["source_url"])
 
-        # add calendar source note
-        if cal and cal.get("source_url"):
-            row["notes"] = (row["notes"] + (" | " if row["notes"] else "") + f"Calendar: {cal['source_url']}")
+        # Derived calculations (requires price + dist)
+        if price is not None and dist is not None and price > 0:
+            row["div_pct_per_share"] = (dist / price) * 100.0
+            row["payout_per_1000"] = (1000.0 / price) * dist
+            row["annualized_yield_pct"] = (dist * 52.0 / price) * 100.0
+            row["monthly_income_per_1000"] = (row["payout_per_1000"] * 52.0) / 12.0
 
         items.append(row)
 
-    items = dedupe_by_ticker(items)
+    items_weekly = [x for x in items if str(x.get("frequency", "")).lower() == "weekly"]
 
-    # Safety net: if scrape fails badly, restore prior snapshot instead of wiping
-    if len(items) < MIN_EXPECTED_ITEMS:
+    # Safety net: if we parsed too few items, restore previous snapshot instead of wiping.
+    if len(items_weekly) < MIN_EXPECTED_ITEMS:
         prev = read_json_if_exists(Path(OUTFILE_BACKUP), None)
         if isinstance(prev, dict) and isinstance(prev.get("items"), list) and len(prev["items"]) >= MIN_EXPECTED_ITEMS:
-            items = prev["items"]
-            print(f"[fallback] restored previous snapshot from {OUTFILE_BACKUP}, count={len(items)}")
+            items_weekly = prev["items"]
+            print(f"[fallback] restored previous snapshot from {OUTFILE_BACKUP}, count={len(items_weekly)}")
         elif isinstance(prev, list) and len(prev) >= MIN_EXPECTED_ITEMS:
-            items = prev
-            print(f"[fallback] restored previous snapshot(list) from {OUTFILE_BACKUP}, count={len(items)}")
+            items_weekly = prev
+            print(f"[fallback] restored previous snapshot(list) from {OUTFILE_BACKUP}, count={len(items_weekly)}")
         else:
             print("[fallback] no valid previous snapshot found; keeping small result")
 
-    return items
+    return items_weekly
 
 
-# =========================
+# ============================================================
 # Main
-# =========================
+# ============================================================
 def main():
     items = build_items()
     payload = {
@@ -618,10 +734,10 @@ def main():
         "items": items
     }
 
-    # Write history first (so comparisons can look back)
+    # Write today's snapshot first
     write_history_snapshot(payload)
 
-    # Compute comparisons using history (including today's snapshot)
+    # Compute comparisons using history
     compute_ex_div_comparisons(items)
     payload["items"] = items
 
@@ -638,7 +754,7 @@ def main():
     }, indent=2), encoding="utf-8")
 
     print(f"Wrote {OUTFILE_PRIMARY} and {OUTFILE_BACKUP} with {len(items)} items; alerts={len(alerts)}")
-    print("NOTE: Prices are WeeklyPayers-only (USE_YAHOO_PRICES=False). Annualized yield = dist*52/price.")
+
 
 if __name__ == "__main__":
     main()
