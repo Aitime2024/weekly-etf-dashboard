@@ -1,54 +1,70 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Weekly Pay ETF Dashboard</title>
-
-  <!-- Tabulator (sortable/filterable grid) -->
-  <link href="https://unpkg.com/tabulator-tables@6.3.0/dist/css/tabulator.min.css" rel="stylesheet">
-  <script src="https://unpkg.com/tabulator-tables@6.3.0/dist/js/tabulator.min.js"></script>
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <h1>Weekly Pay ETF Dashboard</h1>
-    <div class="sub">Updates daily via GitHub Actions · Weekly-only universe</div>
-  </header>
+  <div class="wrap" id="main">
+    <header class="header">
+      <div>
+        <h1>Weekly Pay ETF Dashboard</h1>
+        <div class="sub">Updates daily via GitHub Actions · Weekly-only universe</div>
+      </div>
+      <div class="pills">
+        <span class="pill">Weekly ETFs tracked: <b id="stat-total">—</b></span>
+        <span class="pill">YieldMax: <b id="stat-yieldmax">—</b></span>
+        <span class="pill">GraniteShares: <b id="stat-granite">—</b></span>
+        <span class="pill">Roundhill: <b id="stat-roundhill">—</b></span>
+        <span class="pill">Other: <b id="stat-other">—</b></span>
+        <span class="pill">Last update: <b id="stat-updated">—</b></span>
+      </div>
+    </header>
 
-  <section class="summary">
-    <div id="summaryBox" class="summaryBox">Loading summary…</div>
-  </section>
+    <section class="alerts-section">
+      <div id="alerts"></div>
+    </section>
 
-  <section class="alerts">
-    <div class="alertsTitle">Alerts</div>
-    <div id="alertsBox" class="alertsBox">Loading…</div>
-  </section>
+    <section class="controls">
+      <input id="search" type="text" placeholder="Search ticker / name / issuer" />
+      <select id="issuer"></select>
+    </section>
 
-  <section class="controls">
-    <input id="search" type="text" placeholder="Search ticker / name / issuer…" />
-    <select id="issuerFilter">
-      <option value="">All Issuers</option>
-      <option value="YieldMax">YieldMax</option>
-      <option value="GraniteShares">GraniteShares</option>
-      <option value="Roundhill">Roundhill</option>
-      <option value="Other">Other</option>
-    </select>
+    <section class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>ETF Name</th>
+            <th>Issuer</th>
+            <th>Reference Asset</th>
+            <th>Distribution/Share</th>
+            <th>Div %/Share</th>
+            <th>Frequency</th>
+            <th>Declaration</th>
+            <th>Ex-Dividend</th>
+            <th>Record</th>
+            <th>Pay</th>
+            <th>NAV (Official)</th>
+            <th>Price (Proxy)</th>
+            <th>Price % (Ex-1w)</th>
+            <th>Price % (Ex-1m)</th>
+            <th>Dist % (Ex-1w)</th>
+            <th>Dist % (Ex-1m)</th>
+            <th>NAV % (Ex-1w)</th>
+            <th>NAV % (Ex-1m)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
 
-    <label class="chk">
-      <input id="highContrast" type="checkbox" />
-      High contrast
-    </label>
-
-    <span id="lastUpdated" class="lastUpdated"></span>
-  </section>
-
-  <div id="table"></div>
-
-  <footer>
-    Data sources: issuer fund lists / distribution pages; price proxy via Stooq. NAV(Official) fills where available.
-  </footer>
+    <footer class="footer">
+      Data sourced from WeeklyPayers (table + calendar). Annualized yield is derived as dist × 52 ÷ price (not shown in table columns here).
+    </footer>
+  </div>
 
   <script src="app.js"></script>
 </body>
