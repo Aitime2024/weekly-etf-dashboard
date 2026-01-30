@@ -1,12 +1,19 @@
-# Weekly Pay ETF Dashboard (Full)
-This repo hosts a GitHub Pages dashboard plus a daily GitHub Action that refreshes data.
+# Weekly Pay ETF Dashboard
 
-## Deploy
-1) Upload contents to a GitHub repo
-2) Settings → Pages → Deploy from branch → main / root
-3) Actions → Run workflow once
+A GitHub Pages dashboard + daily GitHub Action job that scrapes WeeklyPayers and writes JSON files used by the UI.
 
-## Notes
-- Weekly-only discovery: YieldMax / GraniteShares YieldBOOST / Roundhill WeeklyPay
-- Price proxy uses Stooq daily CSV
-- Official NAV left blank unless an issuer feed is added
+## Data source
+- https://weeklypayers.com/ (table: tickers, issuer, current price, last dividend)
+- https://weeklypayers.com/calendar/ (calendar: ex/record vs payment dates)
+
+## Output files
+- `data/weekly_etfs.json` (primary file the UI reads)
+- `data/items.json` (backup / fallback)
+- `data/alerts.json` (alert list)
+- `data/history/YYYY-MM-DD.json` (daily snapshots for comparisons)
+
+## Run locally
+```bash
+pip install -r requirements.txt
+python scraper.py
+python -m http.server 8000
