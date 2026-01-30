@@ -1,223 +1,225 @@
-const issuerOrder = { "YieldMax": 1, "GraniteShares": 2, "Roundhill": 3, "Other": 9 };
+/* global document, fetch */
 
-function normalizeIssuer(i) {
-  if (!i) return "Other";
-  const s = String(i).toLowerCase();
-  if (s.includes("yieldmax")) return "YieldMax";
-  if (s.includes("granite")) return "GraniteShares";
-  if (s.includes("roundhill")) return "Roundhill";
-  return "Other";
+const DATA_URL = "data/weekly_etfs.json";
+const ALERTS_URL = "data/alerts.json";
+
+function fmtNum(x, digits = 2) {
+  if (x === null || x === undefined || Number.isNaN(x)) return "—";
+  const n = Number(x);
+  return n.toFixed(digits);
 }
 
-function setHighContrast(on) {
-  document.body.classList.toggle("hc", !!on);
-  try { localStorage.setItem("hc", on ? "1" : "0"); } catch {}
+function fmtPct(x, digits = 2) {
+  if (x === null || x === undefined || Number.isNaN(x)) return "—";
+  const n = Number(x);
+  return `${n.toFixed(digits)}%`;
 }
 
-function initHighContrastToggle() {
-  const el = document.getElementById("highContrast");
-  if (!el) return;
-
-  let saved = "0";
-  try { saved = localStorage.getItem("hc") || "0"; } catch {}
-  const on = saved === "1";
-
-  el.checked = on;
-  setHighContrast(on);
-
-  el.addEventListener("change", () => setHighContrast(el.checked));
+function fmtMoney(x, digits = 2) {
+  if (x === null || x === undefined || Number.isNaN(x)) return "—";
+  const n = Number(x);
+  return `$${n.toFixed(digits)}`;
 }
 
-const fmt2 = (cell) => {
-  const v = cell.getValue();
-  if (v === null || v === undefined || v === "" || Number.isNaN(Number(v))) return "—";
-  return Number(v).toFixed(2);
-};
+function byText(q) {
+  const el = document.querySelector(q);
+  return el ? el.textContent : "";
+}
 
-const fmt4 = (cell) => {
-  const v = cell.getValue();
-  if (v === null || v === undefined || v === "" || Number.isNaN(Number(v))) return "—";
-  return Number(v).toFixed(4);
-};
+function setText(q, text) {
+  const el = document.querySelector(q);
+  if (el) el.textContent = text;
+}
 
-const fmtPctAccessible = (cell) => {
-  const v = cell.getValue();
-  if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
-  const n = Number(v);
+function setHTML(q, html) {
+  const el = document.querySelector(q);
+  if (el) el.innerHTML = html;
+}
 
-  let cls = "zero";
-  let icon = "●";
-  if (n > 0) { cls = "pos"; icon = "▲"; }
-  else if (n < 0) { cls = "neg"; icon = "▼"; }
+function escapeHtml(s) {
+  return String(s || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
-  return `<span class="${cls}">${icon} ${n.toFixed(2)}%</span>`;
-};
+let ALL_ITEMS = [];
 
-// Div %/Share formatter (plain percent, not up/down arrows)
-const fmtDivPct = (cell) => {
-  const v = cell.getValue();
-  if (v === null || v === undefined || v === "" || Number.isNaN(Number(v))) return "—";
-  return `${Number(v).toFixed(2)}%`;
-};
-
-async function loadAlerts() {
-  try {
-    const r = await fetch("./data/alerts.json", { cache: "no-store" });
-    const a = await r.json();
-    const box = document.getElementById("alertsBox");
-
-    if (!a.alerts || a.alerts.length === 0) {
-      box.textContent = `No alerts (threshold ${a.threshold_drop_pct}%).`;
-      return;
-    }
-
-    box.innerHTML = a.alerts.slice(0, 20).map(x =>
-      `<div class="alertItem"><b>${x.ticker}</b> — ${x.message} (Ex-div: ${x.ex_dividend_date || "—"})</div>`
-    ).join("");
-  } catch {
-    const box = document.getElementById("alertsBox");
-    if (box) box.textContent = "No alerts data yet.";
+function issuerCounts(items) {
+  const counts = {};
+  for (const it of items) {
+    const k = it.issuer || "Other";
+    counts[k] = (counts[k] || 0) + 1;
   }
+  return counts;
 }
 
-function renderSummary(rows, generatedAt) {
-  const counts = { YieldMax: 0, GraniteShares: 0, Roundhill: 0, Other: 0 };
-  for (const r of rows) {
-    const g = r.issuer_group || "Other";
-    counts[g] = (counts[g] ?? 0) + 1;
-  }
-  const total = rows.length;
+function renderTopStats(items, generatedAt) {
+  const counts = issuerCounts(items);
+  setText("#stat-total", String(items.length));
+  setText("#stat-updated", generatedAt || "—");
 
-  const box = document.getElementById("summaryBox");
-  if (!box) return;
+  // common issuers from your UI pills
+  setText("#stat-yieldmax", String(counts["YieldMax"] || 0));
+  setText("#stat-granite", String(counts["GraniteShares"] || 0));
+  setText("#stat-roundhill", String(counts["RoundHill Investments"] || counts["Roundhill"] || 0));
 
-  box.innerHTML = `
-    <span class="summaryPill">Weekly ETFs tracked: ${total}</span>
-    <span class="summaryPill">YieldMax: ${counts.YieldMax}</span>
-    <span class="summaryPill">GraniteShares: ${counts.GraniteShares}</span>
-    <span class="summaryPill">Roundhill: ${counts.Roundhill}</span>
-    <span class="summaryPill">Other: ${counts.Other}</span>
-    <span class="summaryPill">Last update: ${generatedAt}</span>
+  const known = (counts["YieldMax"] || 0) + (counts["GraniteShares"] || 0) + (counts["RoundHill Investments"] || counts["Roundhill"] || 0);
+  setText("#stat-other", String(items.length - known));
+}
+
+function renderAlertsCollapsible(alertPayload) {
+  const alerts = (alertPayload && alertPayload.alerts) ? alertPayload.alerts : [];
+  const count = alerts.length;
+
+  const container = document.querySelector("#alerts");
+  if (!container) return;
+
+  const rows = alerts.slice(0, 200).map(a => {
+    const t = escapeHtml(a.ticker || "");
+    const msg = escapeHtml(a.message || "");
+    const ex = escapeHtml(a.ex_dividend_date || "—");
+    return `<div class="alert-row"><b>${t}</b> — ${msg} (Ex-div: ${ex})</div>`;
+  }).join("");
+
+  container.innerHTML = `
+    <details class="alerts-details" ${count ? "" : "open"}>
+      <summary class="alerts-summary">
+        <span>Alerts</span>
+        <span class="alerts-count">${count}</span>
+        <span class="alerts-hint">${count ? "click to expand/collapse" : "no alerts"}</span>
+      </summary>
+      <div class="alerts-body">
+        ${count ? rows : `<div class="muted">No alerts triggered.</div>`}
+      </div>
+    </details>
   `;
 }
 
-async function main() {
-  initHighContrastToggle();
-  await loadAlerts();
+function buildRow(it) {
+  const t = escapeHtml(it.ticker);
+  const name = escapeHtml(it.name || "");
+  const issuer = escapeHtml(it.issuer || "Other");
+  const ref = escapeHtml(it.reference_asset || "");
 
-  const res = await fetch("./data/weekly_etfs.json", { cache: "no-store" });
-  const payload = await res.json();
+  const dist = (it.distribution_per_share !== null && it.distribution_per_share !== undefined)
+    ? fmtMoney(it.distribution_per_share, 2)
+    : "—";
 
-  document.getElementById("lastUpdated").textContent = `Last updated: ${payload.generated_at}`;
+  const divPct = fmtPct(it.div_pct_per_share, 2);
 
-  const rows = (payload.items || []).map(x => {
-    const issuer_group = normalizeIssuer(x.issuer);
-    const issuer_sort = issuerOrder[issuer_group] ?? 9;
+  const freq = escapeHtml(it.frequency || "Weekly");
 
-    // Use proxy price as the share price (since that's what you have in JSON)
-    const price = (x.price_proxy !== null && x.price_proxy !== undefined) ? Number(x.price_proxy) : null;
-    const dist = (x.distribution_per_share !== null && x.distribution_per_share !== undefined) ? Number(x.distribution_per_share) : null;
+  const decl = escapeHtml(it.declaration_date || "");
+  const ex   = escapeHtml(it.ex_dividend_date || "");
+  const rec  = escapeHtml(it.record_date || "");
+  const pay  = escapeHtml(it.pay_date || "");
 
-    // Div %/Share = dist / price * 100
-    let div_pct_per_share = null;
-    if (Number.isFinite(price) && price > 0 && Number.isFinite(dist) && dist >= 0) {
-      div_pct_per_share = (dist / price) * 100;
-    }
+  const nav = (it.nav_official === null || it.nav_official === undefined) ? "—" : fmtMoney(it.nav_official, 2);
+  const price = (it.price_proxy === null || it.price_proxy === undefined) ? "—" : fmtMoney(it.price_proxy, 2);
 
-    return {
-      ...x,
-      issuer_group,
-      issuer_sort,
+  const price1w = fmtPct(it.price_chg_ex_1w_pct, 2);
+  const price1m = fmtPct(it.price_chg_ex_1m_pct, 2);
+  const dist1w  = fmtPct(it.dist_chg_ex_1w_pct, 2);
+  const dist1m  = fmtPct(it.dist_chg_ex_1m_pct, 2);
+  const nav1w   = fmtPct(it.nav_chg_ex_1w_pct, 2);
+  const nav1m   = fmtPct(it.nav_chg_ex_1m_pct, 2);
 
-      // New fields for the table
-      share_price: Number.isFinite(price) ? price : null,
-      div_pct_per_share,
-    };
-  });
+  return `
+    <tr>
+      <td class="mono">${t}</td>
+      <td>${name}</td>
+      <td>${issuer}</td>
+      <td class="mono">${ref}</td>
+      <td class="mono">${dist}</td>
+      <td class="mono">${divPct}</td>
+      <td>${freq}</td>
+      <td class="mono">${decl || "—"}</td>
+      <td class="mono">${ex || "—"}</td>
+      <td class="mono">${rec || "—"}</td>
+      <td class="mono">${pay || "—"}</td>
+      <td class="mono">${nav}</td>
+      <td class="mono">${price}</td>
+      <td class="mono">${price1w}</td>
+      <td class="mono">${price1m}</td>
+      <td class="mono">${dist1w}</td>
+      <td class="mono">${dist1m}</td>
+      <td class="mono">${nav1w}</td>
+      <td class="mono">${nav1m}</td>
+    </tr>
+  `;
+}
 
-  renderSummary(rows, payload.generated_at);
+function renderTable(items) {
+  const tbody = document.querySelector("#tbody");
+  if (!tbody) return;
+  tbody.innerHTML = items.map(buildRow).join("");
+}
 
-  const table = new Tabulator("#table", {
-    data: rows,
-    layout: "fitDataStretch",
-    height: "calc(100vh - 235px)",
-    initialSort: [
-      { column: "issuer_sort", dir: "asc" },
-      { column: "ticker", dir: "asc" },
-    ],
-    columns: [
-      { title: "Ticker", field: "ticker", width: 90 },
-      { title: "ETF Name", field: "name", minWidth: 260 },
-      { title: "Issuer", field: "issuer_group", width: 140 },
-      { title: "Reference Asset", field: "reference_asset", width: 150 },
-      { title: "Payout per $1000", field: "payout_per_1000", width: 150, sorter: "number", formatter: fmt2 },
-      // ✅ NEW: Share Price BEFORE Distribution
-      { title: "Share Price", field: "share_price", width: 120, sorter: "number", formatter: fmt2 },
-      { title: "Annualized Yield %", field: "annualized_yield_pct", width: 150, sorter: "number",
-        formatter: (c)=> c.getValue()==null ? "—" : `${Number(c.getValue()).toFixed(2)}%` },
+function applyFilters() {
+  const q = (document.querySelector("#search")?.value || "").trim().toLowerCase();
+  const issuer = (document.querySelector("#issuer")?.value || "ALL");
 
-      { title: "Monthly / $1000", field: "monthly_income_per_1000", width: 140, sorter: "number", formatter: fmt2 },
-      { title: "Distribution/Share", field: "distribution_per_share", width: 160, sorter: "number", formatter: fmt4 },
+  let items = ALL_ITEMS;
 
-      // ✅ NEW: Div %/Share AFTER Distribution
-      { title: "Div %/Share", field: "div_pct_per_share", width: 120, sorter: "number", formatter: fmtDivPct },
+  if (issuer !== "ALL") {
+    items = items.filter(it => (it.issuer || "Other") === issuer);
+  }
 
-      { title: "Frequency", field: "frequency", width: 110 },
-
-      { title: "Declaration", field: "declaration_date", width: 120 },
-      { title: "Ex-Dividend", field: "ex_dividend_date", width: 120 },
-      { title: "Record", field: "record_date", width: 105 },
-      { title: "Pay", field: "pay_date", width: 95 },
-
-      { title: "NAV (Official)", field: "nav_official", width: 120, sorter: "number", formatter: fmt2 },
-      { title: "Price (Proxy)", field: "price_proxy", width: 110, sorter: "number", formatter: fmt2 },
-
-      { title: "Price % (Ex-1w)", field: "price_chg_ex_1w_pct", width: 140, sorter: "number", formatter: fmtPctAccessible },
-      { title: "Price % (Ex-1m)", field: "price_chg_ex_1m_pct", width: 140, sorter: "number", formatter: fmtPctAccessible },
-
-      { title: "Dist % (Ex-1w)", field: "dist_chg_ex_1w_pct", width: 130, sorter: "number", formatter: fmtPctAccessible },
-      { title: "Dist % (Ex-1m)", field: "dist_chg_ex_1m_pct", width: 130, sorter: "number", formatter: fmtPctAccessible },
-
-      { title: "NAV % (Ex-1w)", field: "nav_chg_ex_1w_pct", width: 130, sorter: "number", formatter: fmtPctAccessible },
-      { title: "NAV % (Ex-1m)", field: "nav_chg_ex_1m_pct", width: 130, sorter: "number", formatter: fmtPctAccessible },
-
-      { title: "Dist Σ 8w", field: "dist_sum_8w", width: 110, sorter: "number", formatter: fmt4 },
-      { title: "Dist Slope 8w", field: "dist_slope_8w", width: 120, sorter: "number",
-        formatter: (c)=> c.getValue()==null ? "—" : Number(c.getValue()).toFixed(6) },
-      { title: "Stability", field: "dist_stability_score", width: 110, sorter: "number",
-        formatter: (c)=> c.getValue()==null ? "—" : Number(c.getValue()).toFixed(1) },
-
-      { title: "Days Since Ex", field: "days_since_ex_div", width: 120, sorter: "number" },
-      { title: "Notes", field: "notes", minWidth: 200 },
-    ],
-  });
-
-  const search = document.getElementById("search");
-  const issuerFilter = document.getElementById("issuerFilter");
-
-  function applyFilters() {
-    const q = (search.value || "").toLowerCase().trim();
-    const issuer = issuerFilter.value;
-
-    table.setFilter((data) => {
-      const matchesSearch =
-        !q ||
-        (data.ticker || "").toLowerCase().includes(q) ||
-        (data.name || "").toLowerCase().includes(q) ||
-        (data.issuer_group || "").toLowerCase().includes(q) ||
-        (data.reference_asset || "").toLowerCase().includes(q);
-
-      const matchesIssuer = !issuer || data.issuer_group === issuer;
-
-      return matchesSearch && matchesIssuer;
+  if (q) {
+    items = items.filter(it => {
+      const hay = `${it.ticker || ""} ${it.name || ""} ${it.issuer || ""}`.toLowerCase();
+      return hay.includes(q);
     });
   }
 
-  search.addEventListener("input", applyFilters);
-  issuerFilter.addEventListener("change", applyFilters);
+  renderTable(items);
 }
 
-main().catch(err => {
-  console.error(err);
-  alert("Failed to load data. Check console for details.");
-});
+function populateIssuerFilter(items) {
+  const sel = document.querySelector("#issuer");
+  if (!sel) return;
+
+  const counts = issuerCounts(items);
+  const issuers = Object.keys(counts).sort((a, b) => a.localeCompare(b));
+
+  sel.innerHTML = `<option value="ALL">All Issuers</option>` +
+    issuers.map(i => `<option value="${escapeHtml(i)}">${escapeHtml(i)} (${counts[i]})</option>`).join("");
+}
+
+async function init() {
+  try {
+    const [dataRes, alertRes] = await Promise.all([
+      fetch(DATA_URL, { cache: "no-store" }),
+      fetch(ALERTS_URL, { cache: "no-store" }).catch(() => null),
+    ]);
+
+    if (!dataRes.ok) throw new Error(`Failed to load ${DATA_URL}`);
+
+    const payload = await dataRes.json();
+    const items = Array.isArray(payload.items) ? payload.items : [];
+
+    ALL_ITEMS = items;
+
+    renderTopStats(items, payload.generated_at || "");
+    populateIssuerFilter(items);
+    renderTable(items);
+
+    if (alertRes && alertRes.ok) {
+      const alerts = await alertRes.json();
+      renderAlertsCollapsible(alerts);
+    } else {
+      renderAlertsCollapsible({ alerts: [] });
+    }
+
+    document.querySelector("#search")?.addEventListener("input", applyFilters);
+    document.querySelector("#issuer")?.addEventListener("change", applyFilters);
+  } catch (err) {
+    console.error(err);
+    setHTML("#main", `<div class="error">Error loading data. Check that <code>${DATA_URL}</code> exists and is valid JSON.</div>`);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", init);
