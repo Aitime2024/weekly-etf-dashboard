@@ -1,225 +1,182 @@
-/* global document, fetch */
+// app.js
+// UI for Weekly ETF Dashboard
+// - Collapsible alerts (saves space)
+// - Robust rendering even when fields are missing
+// - Uses data/weekly_etfs.json primarily, falls back to data/items.json
 
-const DATA_URL = "data/weekly_etfs.json";
-const ALERTS_URL = "data/alerts.json";
+const DATA_PRIMARY = "data/weekly_etfs.json";
+const DATA_FALLBACK = "data/items.json";
+const ALERTS_PATH = "data/alerts.json";
+
+function el(tag, attrs = {}, children = []) {
+  const n = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => {
+    if (k === "class") n.className = v;
+    else if (k === "html") n.innerHTML = v;
+    else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v);
+  });
+  children.forEach(c => n.appendChild(typeof c === "string" ? document.createTextNode(c) : c));
+  return n;
+}
+
+async function fetchJson(url) {
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error(`${url} => ${r.status}`);
+  return await r.json();
+}
+
+async function loadData() {
+  try {
+    return await fetchJson(DATA_PRIMARY);
+  } catch (e) {
+    console.warn("Primary data load failed, falling back:", e);
+    return await fetchJson(DATA_FALLBACK);
+  }
+}
 
 function fmtNum(x, digits = 2) {
   if (x === null || x === undefined || Number.isNaN(x)) return "—";
   const n = Number(x);
+  if (!Number.isFinite(n)) return "—";
   return n.toFixed(digits);
 }
 
 function fmtPct(x, digits = 2) {
   if (x === null || x === undefined || Number.isNaN(x)) return "—";
   const n = Number(x);
+  if (!Number.isFinite(n)) return "—";
   return `${n.toFixed(digits)}%`;
 }
 
 function fmtMoney(x, digits = 2) {
   if (x === null || x === undefined || Number.isNaN(x)) return "—";
   const n = Number(x);
+  if (!Number.isFinite(n)) return "—";
   return `$${n.toFixed(digits)}`;
 }
 
-function byText(q) {
-  const el = document.querySelector(q);
-  return el ? el.textContent : "";
+function safeText(x) {
+  return (x === null || x === undefined || x === "") ? "—" : String(x);
 }
 
-function setText(q, text) {
-  const el = document.querySelector(q);
-  if (el) el.textContent = text;
+function issuerBucket(issuer) {
+  const s = (issuer || "").toLowerCase();
+  if (s.includes("yieldmax")) return "YieldMax";
+  if (s.includes("granite")) return "GraniteShares";
+  if (s.includes("roundhill")) return "Roundhill";
+  if (!issuer) return "Other";
+  return "Other";
 }
 
-function setHTML(q, html) {
-  const el = document.querySelector(q);
-  if (el) el.innerHTML = html;
+function renderSummary(payload, items) {
+  const summaryBar = document.getElementById("summaryBar");
+  if (!summaryBar) return;
+
+  const counts = {
+    total: items.length,
+    YieldMax: 0,
+    GraniteShares: 0,
+    Roundhill: 0,
+    Other: 0
+  };
+
+  items.forEach(it => {
+    const b = issuerBucket(it.issuer);
+    counts[b] = (counts[b] || 0) + 1;
+  });
+
+  summaryBar.innerHTML = "";
+  summaryBar.appendChild(el("div", { class: "pill" }, [`Weekly ETFs tracked: ${counts.total}`]));
+  summaryBar.appendChild(el("div", { class: "pill" }, [`YieldMax: ${counts.YieldMax}`]));
+  summaryBar.appendChild(el("div", { class: "pill" }, [`GraniteShares: ${counts.GraniteShares}`]));
+  summaryBar.appendChild(el("div", { class: "pill" }, [`Roundhill: ${counts.Roundhill}`]));
+  summaryBar.appendChild(el("div", { class: "pill" }, [`Other: ${counts.Other}`]));
+  summaryBar.appendChild(el("div", { class: "pill" }, [`Last update: ${safeText(payload.generated_at)}`]));
 }
 
-function escapeHtml(s) {
-  return String(s || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+async function renderAlerts() {
+  const alertsWrap = document.getElementById("alerts");
+  if (!alertsWrap) return;
 
-let ALL_ITEMS = [];
+  alertsWrap.innerHTML = "Loading alerts…";
 
-function issuerCounts(items) {
-  const counts = {};
-  for (const it of items) {
-    const k = it.issuer || "Other";
-    counts[k] = (counts[k] || 0) + 1;
-  }
-  return counts;
-}
-
-function renderTopStats(items, generatedAt) {
-  const counts = issuerCounts(items);
-  setText("#stat-total", String(items.length));
-  setText("#stat-updated", generatedAt || "—");
-
-  // common issuers from your UI pills
-  setText("#stat-yieldmax", String(counts["YieldMax"] || 0));
-  setText("#stat-granite", String(counts["GraniteShares"] || 0));
-  setText("#stat-roundhill", String(counts["RoundHill Investments"] || counts["Roundhill"] || 0));
-
-  const known = (counts["YieldMax"] || 0) + (counts["GraniteShares"] || 0) + (counts["RoundHill Investments"] || counts["Roundhill"] || 0);
-  setText("#stat-other", String(items.length - known));
-}
-
-function renderAlertsCollapsible(alertPayload) {
-  const alerts = (alertPayload && alertPayload.alerts) ? alertPayload.alerts : [];
-  const count = alerts.length;
-
-  const container = document.querySelector("#alerts");
-  if (!container) return;
-
-  const rows = alerts.slice(0, 200).map(a => {
-    const t = escapeHtml(a.ticker || "");
-    const msg = escapeHtml(a.message || "");
-    const ex = escapeHtml(a.ex_dividend_date || "—");
-    return `<div class="alert-row"><b>${t}</b> — ${msg} (Ex-div: ${ex})</div>`;
-  }).join("");
-
-  container.innerHTML = `
-    <details class="alerts-details" ${count ? "" : "open"}>
-      <summary class="alerts-summary">
-        <span>Alerts</span>
-        <span class="alerts-count">${count}</span>
-        <span class="alerts-hint">${count ? "click to expand/collapse" : "no alerts"}</span>
-      </summary>
-      <div class="alerts-body">
-        ${count ? rows : `<div class="muted">No alerts triggered.</div>`}
-      </div>
-    </details>
-  `;
-}
-
-function buildRow(it) {
-  const t = escapeHtml(it.ticker);
-  const name = escapeHtml(it.name || "");
-  const issuer = escapeHtml(it.issuer || "Other");
-  const ref = escapeHtml(it.reference_asset || "");
-
-  const dist = (it.distribution_per_share !== null && it.distribution_per_share !== undefined)
-    ? fmtMoney(it.distribution_per_share, 2)
-    : "—";
-
-  const divPct = fmtPct(it.div_pct_per_share, 2);
-
-  const freq = escapeHtml(it.frequency || "Weekly");
-
-  const decl = escapeHtml(it.declaration_date || "");
-  const ex   = escapeHtml(it.ex_dividend_date || "");
-  const rec  = escapeHtml(it.record_date || "");
-  const pay  = escapeHtml(it.pay_date || "");
-
-  const nav = (it.nav_official === null || it.nav_official === undefined) ? "—" : fmtMoney(it.nav_official, 2);
-  const price = (it.price_proxy === null || it.price_proxy === undefined) ? "—" : fmtMoney(it.price_proxy, 2);
-
-  const price1w = fmtPct(it.price_chg_ex_1w_pct, 2);
-  const price1m = fmtPct(it.price_chg_ex_1m_pct, 2);
-  const dist1w  = fmtPct(it.dist_chg_ex_1w_pct, 2);
-  const dist1m  = fmtPct(it.dist_chg_ex_1m_pct, 2);
-  const nav1w   = fmtPct(it.nav_chg_ex_1w_pct, 2);
-  const nav1m   = fmtPct(it.nav_chg_ex_1m_pct, 2);
-
-  return `
-    <tr>
-      <td class="mono">${t}</td>
-      <td>${name}</td>
-      <td>${issuer}</td>
-      <td class="mono">${ref}</td>
-      <td class="mono">${dist}</td>
-      <td class="mono">${divPct}</td>
-      <td>${freq}</td>
-      <td class="mono">${decl || "—"}</td>
-      <td class="mono">${ex || "—"}</td>
-      <td class="mono">${rec || "—"}</td>
-      <td class="mono">${pay || "—"}</td>
-      <td class="mono">${nav}</td>
-      <td class="mono">${price}</td>
-      <td class="mono">${price1w}</td>
-      <td class="mono">${price1m}</td>
-      <td class="mono">${dist1w}</td>
-      <td class="mono">${dist1m}</td>
-      <td class="mono">${nav1w}</td>
-      <td class="mono">${nav1m}</td>
-    </tr>
-  `;
-}
-
-function renderTable(items) {
-  const tbody = document.querySelector("#tbody");
-  if (!tbody) return;
-  tbody.innerHTML = items.map(buildRow).join("");
-}
-
-function applyFilters() {
-  const q = (document.querySelector("#search")?.value || "").trim().toLowerCase();
-  const issuer = (document.querySelector("#issuer")?.value || "ALL");
-
-  let items = ALL_ITEMS;
-
-  if (issuer !== "ALL") {
-    items = items.filter(it => (it.issuer || "Other") === issuer);
+  let data;
+  try {
+    data = await fetchJson(ALERTS_PATH);
+  } catch (e) {
+    alertsWrap.innerHTML = "";
+    alertsWrap.appendChild(el("div", { class: "muted" }, ["Alerts not available."]));
+    return;
   }
 
-  if (q) {
-    items = items.filter(it => {
-      const hay = `${it.ticker || ""} ${it.name || ""} ${it.issuer || ""}`.toLowerCase();
-      return hay.includes(q);
+  const alerts = Array.isArray(data.alerts) ? data.alerts : [];
+  alertsWrap.innerHTML = "";
+
+  // Collapsible block
+  const details = el("details", { class: "alerts-details" }, []);
+  // Default collapsed; if you want default open, add: details.setAttribute("open","")
+  const summary = el("summary", { class: "alerts-summary" }, [
+    `Alerts (${alerts.length}) — click to expand`
+  ]);
+
+  details.appendChild(summary);
+
+  const list = el("div", { class: "alerts-list" }, []);
+  if (alerts.length === 0) {
+    list.appendChild(el("div", { class: "muted" }, ["No alerts."]));
+  } else {
+    alerts.forEach(a => {
+      const line = el("div", { class: "alert-line" }, [
+        el("strong", {}, [safeText(a.ticker)]),
+        ` — ${safeText(a.message)} `,
+        el("span", { class: "muted" }, [a.ex_dividend_date ? `(Ex-div: ${a.ex_dividend_date})` : "" ])
+      ]);
+      list.appendChild(line);
     });
   }
 
-  renderTable(items);
+  details.appendChild(list);
+  alertsWrap.appendChild(details);
 }
 
-function populateIssuerFilter(items) {
-  const sel = document.querySelector("#issuer");
-  if (!sel) return;
+function renderTable(items) {
+  const tbody = document.querySelector("#etfTable tbody");
+  if (!tbody) return;
 
-  const counts = issuerCounts(items);
-  const issuers = Object.keys(counts).sort((a, b) => a.localeCompare(b));
+  tbody.innerHTML = "";
 
-  sel.innerHTML = `<option value="ALL">All Issuers</option>` +
-    issuers.map(i => `<option value="${escapeHtml(i)}">${escapeHtml(i)} (${counts[i]})</option>`).join("");
-}
+  items.forEach(it => {
+    const tr = document.createElement("tr");
 
-async function init() {
-  try {
-    const [dataRes, alertRes] = await Promise.all([
-      fetch(DATA_URL, { cache: "no-store" }),
-      fetch(ALERTS_URL, { cache: "no-store" }).catch(() => null),
-    ]);
+    // Match your existing table headers/columns:
+    // Ticker | Issuer | Reference | Dist | Div% | Freq | Decl | Ex | Rec | Pay | NAV | Price | Price% | Dist% | etc...
+    // We'll render a safe subset that matches what you've shown and leaves blanks as "—".
 
-    if (!dataRes.ok) throw new Error(`Failed to load ${DATA_URL}`);
+    const cols = [
+      it.ticker,
+      it.name || issuerBucket(it.issuer), // if name missing, at least show issuer bucket
+      it.issuer,
+      it.reference_asset,
+      fmtMoney(it.distribution_per_share, 4),
+      fmtPct(it.div_pct_per_share, 2),
+      it.frequency,
+      it.declaration_date,
+      it.ex_dividend_date,
+      it.record_date,
+      it.pay_date,
+      "—", // NAV (not provided by WeeklyPayers)
+      fmtMoney(it.share_price, 2),
+      it.price_chg_ex_1w_pct == null ? "—" : fmtPct(it.price_chg_ex_1w_pct, 2),
+      it.price_chg_ex_1m_pct == null ? "—" : fmtPct(it.price_chg_ex_1m_pct, 2),
+      it.dist_chg_ex_1w_pct == null ? "—" : fmtPct(it.dist_chg_ex_1w_pct, 2),
+      it.dist_chg_ex_1m_pct == null ? "—" : fmtPct(it.dist_chg_ex_1m_pct, 2),
+      it.days_since_ex_div == null ? "—" : safeText(it.days_since_ex_div),
+      it.dist_stability_score == null ? "—" : safeText(it.dist_stability_score),
+      it.annualized_yield_pct == null ? "—" : fmtPct(it.annualized_yield_pct, 2),
+    ];
 
-    const payload = await dataRes.json();
-    const items = Array.isArray(payload.items) ? payload.items : [];
-
-    ALL_ITEMS = items;
-
-    renderTopStats(items, payload.generated_at || "");
-    populateIssuerFilter(items);
-    renderTable(items);
-
-    if (alertRes && alertRes.ok) {
-      const alerts = await alertRes.json();
-      renderAlertsCollapsible(alerts);
-    } else {
-      renderAlertsCollapsible({ alerts: [] });
-    }
-
-    document.querySelector("#search")?.addEventListener("input", applyFilters);
-    document.querySelector("#issuer")?.addEventListener("change", applyFilters);
-  } catch (err) {
-    console.error(err);
-    setHTML("#main", `<div class="error">Error loading data. Check that <code>${DATA_URL}</code> exists and is valid JSON.</div>`);
-  }
-}
-
-document.addEventListener("DOMContentLoaded", init);
+    cols.forEach(v => {
+      const td = document.createElement("td");
+      td.textContent = safeText(v);
+      tr.appendChild
