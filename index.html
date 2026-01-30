@@ -2,68 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Weekly Pay ETF Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-  <div class="wrap" id="main">
-    <header class="header">
-      <div>
-        <h1>Weekly Pay ETF Dashboard</h1>
-        <div class="sub">Updates daily via GitHub Actions · Weekly-only universe</div>
-      </div>
-      <div class="pills">
-        <span class="pill">Weekly ETFs tracked: <b id="stat-total">—</b></span>
-        <span class="pill">YieldMax: <b id="stat-yieldmax">—</b></span>
-        <span class="pill">GraniteShares: <b id="stat-granite">—</b></span>
-        <span class="pill">Roundhill: <b id="stat-roundhill">—</b></span>
-        <span class="pill">Other: <b id="stat-other">—</b></span>
-        <span class="pill">Last update: <b id="stat-updated">—</b></span>
-      </div>
-    </header>
+  <div class="wrap">
+    <h1>Weekly Pay ETF Dashboard</h1>
+    <div class="sub">Updates daily via GitHub Actions · Weekly-only universe</div>
 
-    <section class="alerts-section">
-      <div id="alerts"></div>
-    </section>
+    <div class="pillbar">
+      <div class="pill">Weekly ETFs tracked: <b id="countAll">—</b></div>
+      <div class="pill">YieldMax: <b id="countYieldMax">—</b></div>
+      <div class="pill">GraniteShares: <b id="countGranite">—</b></div>
+      <div class="pill">Roundhill: <b id="countRoundhill">—</b></div>
+      <div class="pill">Other: <b id="countOther">—</b></div>
+      <div class="pill">Last update: <b id="lastUpdated">—</b></div>
+    </div>
 
-    <section class="controls">
-      <input id="search" type="text" placeholder="Search ticker / name / issuer" />
-      <select id="issuer"></select>
-    </section>
+    <div id="alertsHost" class="alerts"></div>
 
-    <section class="table-wrap">
+    <div class="controls">
+      <input id="searchInput" class="search" placeholder="Search ticker / name / issuer" />
+      <select id="issuerSelect" class="select"></select>
+      <div class="meta">Showing: <b id="shownCount">—</b></div>
+    </div>
+
+    <div class="tablewrap">
       <table>
         <thead>
           <tr>
             <th>Ticker</th>
             <th>ETF Name</th>
             <th>Issuer</th>
-            <th>Reference Asset</th>
+            <th>Frequency</th>
+
             <th>Distribution/Share</th>
             <th>Div %/Share</th>
-            <th>Frequency</th>
+
             <th>Declaration</th>
             <th>Ex-Dividend</th>
             <th>Record</th>
             <th>Pay</th>
-            <th>NAV (Official)</th>
-            <th>Price (Proxy)</th>
-            <th>Price % (Ex-1w)</th>
-            <th>Price % (Ex-1m)</th>
+
+            <th>Price</th>
+            <th>Annualized Yield</th>
+
+            <th>Payout per $1000</th>
+            <th>Monthly Income per $1000</th>
+
             <th>Dist % (Ex-1w)</th>
             <th>Dist % (Ex-1m)</th>
-            <th>NAV % (Ex-1w)</th>
-            <th>NAV % (Ex-1m)</th>
+            <th>Days Since Ex</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
-    </section>
-
-    <footer class="footer">
-      Data sourced from WeeklyPayers (table + calendar). Annualized yield is derived as dist × 52 ÷ price (not shown in table columns here).
-    </footer>
+    </div>
   </div>
 
   <script src="app.js"></script>
