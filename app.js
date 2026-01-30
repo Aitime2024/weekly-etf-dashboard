@@ -1,182 +1,199 @@
-// app.js
-// UI for Weekly ETF Dashboard
-// - Collapsible alerts (saves space)
-// - Robust rendering even when fields are missing
-// - Uses data/weekly_etfs.json primarily, falls back to data/items.json
+/* global window, document, fetch */
 
-const DATA_PRIMARY = "data/weekly_etfs.json";
-const DATA_FALLBACK = "data/items.json";
-const ALERTS_PATH = "data/alerts.json";
-
-function el(tag, attrs = {}, children = []) {
-  const n = document.createElement(tag);
-  Object.entries(attrs).forEach(([k, v]) => {
-    if (k === "class") n.className = v;
-    else if (k === "html") n.innerHTML = v;
-    else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2), v);
-    else n.setAttribute(k, v);
-  });
-  children.forEach(c => n.appendChild(typeof c === "string" ? document.createTextNode(c) : c));
-  return n;
-}
-
-async function fetchJson(url) {
-  const r = await fetch(url, { cache: "no-store" });
-  if (!r.ok) throw new Error(`${url} => ${r.status}`);
-  return await r.json();
-}
-
-async function loadData() {
-  try {
-    return await fetchJson(DATA_PRIMARY);
-  } catch (e) {
-    console.warn("Primary data load failed, falling back:", e);
-    return await fetchJson(DATA_FALLBACK);
-  }
-}
+const DATA_URL = "data/weekly_etfs.json";
+const ALERTS_URL = "data/alerts.json";
 
 function fmtNum(x, digits = 2) {
-  if (x === null || x === undefined || Number.isNaN(x)) return "—";
-  const n = Number(x);
-  if (!Number.isFinite(n)) return "—";
-  return n.toFixed(digits);
+  if (x === null || x === undefined || Number.isNaN(Number(x))) return "—";
+  return Number(x).toFixed(digits);
 }
 
 function fmtPct(x, digits = 2) {
-  if (x === null || x === undefined || Number.isNaN(x)) return "—";
-  const n = Number(x);
-  if (!Number.isFinite(n)) return "—";
-  return `${n.toFixed(digits)}%`;
+  if (x === null || x === undefined || Number.isNaN(Number(x))) return "—";
+  return `${Number(x).toFixed(digits)}%`;
 }
 
-function fmtMoney(x, digits = 2) {
-  if (x === null || x === undefined || Number.isNaN(x)) return "—";
-  const n = Number(x);
-  if (!Number.isFinite(n)) return "—";
-  return `$${n.toFixed(digits)}`;
+function fmtDate(iso) {
+  if (!iso) return "—";
+  return iso;
 }
 
-function safeText(x) {
-  return (x === null || x === undefined || x === "") ? "—" : String(x);
+function qs(sel) {
+  return document.querySelector(sel);
 }
 
-function issuerBucket(issuer) {
-  const s = (issuer || "").toLowerCase();
-  if (s.includes("yieldmax")) return "YieldMax";
-  if (s.includes("granite")) return "GraniteShares";
-  if (s.includes("roundhill")) return "Roundhill";
-  if (!issuer) return "Other";
-  return "Other";
+function el(tag, attrs = {}, children = []) {
+  const node = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => {
+    if (k === "class") node.className = v;
+    else if (k === "text") node.textContent = v;
+    else if (k.startsWith("on") && typeof v === "function") node.addEventListener(k.slice(2), v);
+    else node.setAttribute(k, v);
+  });
+  children.forEach((c) => node.appendChild(c));
+  return node;
 }
 
-function renderSummary(payload, items) {
-  const summaryBar = document.getElementById("summaryBar");
-  if (!summaryBar) return;
+async function loadJSON(url) {
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error(`Failed to load ${url}: ${r.status}`);
+  return await r.json();
+}
 
-  const counts = {
-    total: items.length,
-    YieldMax: 0,
-    GraniteShares: 0,
-    Roundhill: 0,
-    Other: 0
-  };
+function renderHeader(meta) {
+  qs("#lastUpdated").textContent = meta.generated_at || "—";
+  qs("#countAll").textContent = String(meta.items?.length || 0);
 
-  items.forEach(it => {
-    const b = issuerBucket(it.issuer);
-    counts[b] = (counts[b] || 0) + 1;
+  // issuer counts
+  const counts = {};
+  (meta.items || []).forEach((it) => {
+    const issuer = it.issuer || "Other";
+    counts[issuer] = (counts[issuer] || 0) + 1;
   });
 
-  summaryBar.innerHTML = "";
-  summaryBar.appendChild(el("div", { class: "pill" }, [`Weekly ETFs tracked: ${counts.total}`]));
-  summaryBar.appendChild(el("div", { class: "pill" }, [`YieldMax: ${counts.YieldMax}`]));
-  summaryBar.appendChild(el("div", { class: "pill" }, [`GraniteShares: ${counts.GraniteShares}`]));
-  summaryBar.appendChild(el("div", { class: "pill" }, [`Roundhill: ${counts.Roundhill}`]));
-  summaryBar.appendChild(el("div", { class: "pill" }, [`Other: ${counts.Other}`]));
-  summaryBar.appendChild(el("div", { class: "pill" }, [`Last update: ${safeText(payload.generated_at)}`]));
+  qs("#countYieldMax").textContent = String(counts["YieldMax"] || 0);
+  qs("#countGranite").textContent = String(counts["GraniteShares"] || 0);
+  qs("#countRoundhill").textContent = String(counts["Roundhill"] || 0);
+
+  // Everything else
+  const known = (counts["YieldMax"] || 0) + (counts["GraniteShares"] || 0) + (counts["Roundhill"] || 0);
+  qs("#countOther").textContent = String((meta.items?.length || 0) - known);
 }
 
-async function renderAlerts() {
-  const alertsWrap = document.getElementById("alerts");
-  if (!alertsWrap) return;
+function renderAlerts(alertPayload) {
+  const alerts = (alertPayload && alertPayload.alerts) ? alertPayload.alerts : [];
+  const host = qs("#alertsHost");
+  host.innerHTML = "";
 
-  alertsWrap.innerHTML = "Loading alerts…";
-
-  let data;
-  try {
-    data = await fetchJson(ALERTS_PATH);
-  } catch (e) {
-    alertsWrap.innerHTML = "";
-    alertsWrap.appendChild(el("div", { class: "muted" }, ["Alerts not available."]));
-    return;
-  }
-
-  const alerts = Array.isArray(data.alerts) ? data.alerts : [];
-  alertsWrap.innerHTML = "";
-
-  // Collapsible block
-  const details = el("details", { class: "alerts-details" }, []);
-  // Default collapsed; if you want default open, add: details.setAttribute("open","")
-  const summary = el("summary", { class: "alerts-summary" }, [
-    `Alerts (${alerts.length}) — click to expand`
+  const summary = el("div", { class: "alerts-summary" }, [
+    el("div", { class: "alerts-title", text: `Alerts (${alerts.length})` }),
+    el("button", { class: "btn", id: "alertsToggleBtn", text: "Collapse" })
   ]);
 
-  details.appendChild(summary);
+  const list = el("div", { class: "alerts-list", id: "alertsList" });
 
-  const list = el("div", { class: "alerts-list" }, []);
-  if (alerts.length === 0) {
-    list.appendChild(el("div", { class: "muted" }, ["No alerts."]));
+  if (!alerts.length) {
+    list.appendChild(el("div", { class: "alert-item", text: "No alerts today." }));
   } else {
-    alerts.forEach(a => {
-      const line = el("div", { class: "alert-line" }, [
-        el("strong", {}, [safeText(a.ticker)]),
-        ` — ${safeText(a.message)} `,
-        el("span", { class: "muted" }, [a.ex_dividend_date ? `(Ex-div: ${a.ex_dividend_date})` : "" ])
-      ]);
-      list.appendChild(line);
+    alerts.forEach((a) => {
+      list.appendChild(
+        el("div", { class: "alert-item" }, [
+          el("span", { class: "alert-ticker", text: a.ticker || "—" }),
+          el("span", { class: "alert-msg", text: a.message || "" }),
+          el("span", { class: "alert-date", text: a.ex_dividend_date ? `Ex: ${a.ex_dividend_date}` : "" })
+        ])
+      );
     });
   }
 
-  details.appendChild(list);
-  alertsWrap.appendChild(details);
+  host.appendChild(summary);
+  host.appendChild(list);
+
+  // Collapsible behavior
+  let collapsed = false;
+  const btn = qs("#alertsToggleBtn");
+  btn.addEventListener("click", () => {
+    collapsed = !collapsed;
+    qs("#alertsList").style.display = collapsed ? "none" : "block";
+    btn.textContent = collapsed ? "Expand" : "Collapse";
+  });
 }
 
 function renderTable(items) {
-  const tbody = document.querySelector("#etfTable tbody");
-  if (!tbody) return;
-
+  const tbody = qs("#tbody");
   tbody.innerHTML = "";
 
-  items.forEach(it => {
-    const tr = document.createElement("tr");
+  const search = qs("#searchInput");
+  const issuerSel = qs("#issuerSelect");
 
-    // Match your existing table headers/columns:
-    // Ticker | Issuer | Reference | Dist | Div% | Freq | Decl | Ex | Rec | Pay | NAV | Price | Price% | Dist% | etc...
-    // We'll render a safe subset that matches what you've shown and leaves blanks as "—".
+  function applyFilters() {
+    const q = (search.value || "").trim().toLowerCase();
+    const issuer = issuerSel.value;
 
-    const cols = [
-      it.ticker,
-      it.name || issuerBucket(it.issuer), // if name missing, at least show issuer bucket
-      it.issuer,
-      it.reference_asset,
-      fmtMoney(it.distribution_per_share, 4),
-      fmtPct(it.div_pct_per_share, 2),
-      it.frequency,
-      it.declaration_date,
-      it.ex_dividend_date,
-      it.record_date,
-      it.pay_date,
-      "—", // NAV (not provided by WeeklyPayers)
-      fmtMoney(it.share_price, 2),
-      it.price_chg_ex_1w_pct == null ? "—" : fmtPct(it.price_chg_ex_1w_pct, 2),
-      it.price_chg_ex_1m_pct == null ? "—" : fmtPct(it.price_chg_ex_1m_pct, 2),
-      it.dist_chg_ex_1w_pct == null ? "—" : fmtPct(it.dist_chg_ex_1w_pct, 2),
-      it.dist_chg_ex_1m_pct == null ? "—" : fmtPct(it.dist_chg_ex_1m_pct, 2),
-      it.days_since_ex_div == null ? "—" : safeText(it.days_since_ex_div),
-      it.dist_stability_score == null ? "—" : safeText(it.dist_stability_score),
-      it.annualized_yield_pct == null ? "—" : fmtPct(it.annualized_yield_pct, 2),
-    ];
+    const filtered = items.filter((it) => {
+      const matchIssuer = issuer === "ALL" ? true : (it.issuer || "Other") === issuer;
+      const matchText =
+        !q ||
+        (String(it.ticker || "").toLowerCase().includes(q)) ||
+        (String(it.name || "").toLowerCase().includes(q)) ||
+        (String(it.issuer || "").toLowerCase().includes(q));
 
-    cols.forEach(v => {
-      const td = document.createElement("td");
-      td.textContent = safeText(v);
-      tr.appendChild
+      return matchIssuer && matchText;
+    });
+
+    draw(filtered);
+  }
+
+  function draw(rows) {
+    tbody.innerHTML = "";
+    rows.forEach((it) => {
+      const tr = document.createElement("tr");
+
+      const dist = it.distribution_per_share;
+      const px = it.share_price;
+
+      const cells = [
+        it.ticker || "—",
+        it.name || "—",
+        it.issuer || "Other",
+        it.frequency || "Weekly",
+        fmtNum(dist, 4),
+        fmtPct(it.div_pct_per_share, 2),
+        fmtDate(it.declaration_date),
+        fmtDate(it.ex_dividend_date),
+        fmtDate(it.record_date),
+        fmtDate(it.pay_date),
+        fmtNum(px, 2),
+        fmtPct(it.annualized_yield_pct, 2),
+        fmtNum(it.payout_per_1000, 2),
+        fmtNum(it.monthly_income_per_1000, 2),
+        fmtPct(it.dist_chg_ex_1w_pct, 2),
+        fmtPct(it.dist_chg_ex_1m_pct, 2),
+        (it.days_since_ex_div === null || it.days_since_ex_div === undefined) ? "—" : String(it.days_since_ex_div),
+      ];
+
+      cells.forEach((c) => {
+        const td = document.createElement("td");
+        td.textContent = c;
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    qs("#shownCount").textContent = String(rows.length);
+  }
+
+  // Populate issuer dropdown
+  const issuers = Array.from(new Set(items.map((x) => x.issuer || "Other"))).sort();
+  issuerSel.innerHTML = "";
+  issuerSel.appendChild(el("option", { value: "ALL", text: "All Issuers" }));
+  issuers.forEach((iss) => issuerSel.appendChild(el("option", { value: iss, text: iss })));
+
+  search.addEventListener("input", applyFilters);
+  issuerSel.addEventListener("change", applyFilters);
+
+  applyFilters();
+}
+
+async function main() {
+  try {
+    const data = await loadJSON(DATA_URL);
+    renderHeader(data);
+    renderTable(data.items || []);
+  } catch (e) {
+    qs("#lastUpdated").textContent = "Failed to load data";
+    console.error(e);
+  }
+
+  try {
+    const alerts = await loadJSON(ALERTS_URL);
+    renderAlerts(alerts);
+  } catch (e) {
+    // Don’t break the whole page if alerts are missing
+    renderAlerts({ alerts: [] });
+    console.warn("alerts.json missing or failed:", e);
+  }
+}
+
+window.addEventListener("DOMContentLoaded", main);
